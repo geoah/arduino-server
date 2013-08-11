@@ -1,6 +1,8 @@
 package com.ddumanskiy.arduino.server;
 
 import com.ddumanskiy.arduino.common.Utils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
@@ -15,6 +17,8 @@ import java.util.concurrent.Executors;
  */
 public class Server {
 
+    private static final Logger log = LogManager.getLogger(Server.class);
+
     private int port;
 
     public Server(int port) {
@@ -23,8 +27,8 @@ public class Server {
 
     public static void main(String[] args) {
         if (args.length < 1) {
-            System.out.println("You need to specify port.");
-            System.out.println("For instance: 'java -jar server.jar 8080'");
+            log.error("You need to specify port.");
+            log.error("For instance: 'java -jar server.jar 8080'");
             return;
         }
 
@@ -37,8 +41,6 @@ public class Server {
     }
 
     public void start() {
-        System.out.println("Server started.");
-
         ChannelFactory factory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool(),  Executors.newCachedThreadPool());
         ServerBootstrap bootstrap = new ServerBootstrap(factory);
 
@@ -48,5 +50,7 @@ public class Server {
         bootstrap.setOption("child.keepAlive", true);
 
         bootstrap.bind(new InetSocketAddress(port));
+
+        log.info("Server started.");
      }
 }

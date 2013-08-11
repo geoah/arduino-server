@@ -5,6 +5,8 @@ import com.ddumanskiy.arduino.auth.Session;
 import com.ddumanskiy.arduino.auth.UserRegistry;
 import com.ddumanskiy.arduino.server.GroupHolder;
 import com.ddumanskiy.arduino.user.User;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 
@@ -17,6 +19,8 @@ import static com.ddumanskiy.arduino.common.Consts.OK_RESPONSE;
  * Time: 5:41 PM
  */
 public class LoginChannelHandler extends SimpleChannelHandler {
+
+    private static final Logger log = LogManager.getLogger(LoginChannelHandler.class);
 
     private static final String LOGIN_TOKEN = "login";
 
@@ -33,7 +37,7 @@ public class LoginChannelHandler extends SimpleChannelHandler {
         }
 
         if (messageParts.length != 3) {
-            System.out.println("Login Handler. Wrong income message format.");
+            log.error("Wrong income message format.");
             incomeChannel.write(BAD_RESPONSE);
             return;
         }
@@ -42,10 +46,10 @@ public class LoginChannelHandler extends SimpleChannelHandler {
         String userName = messageParts[1];
         //TODO encryption, SSL sockets.
         String pass = messageParts[2];
-        System.out.println("Login Handler. User : " + userName);
+        log.info("User : {}", userName);
 
         if (!UserRegistry.isUserExists(userName)) {
-            System.out.println("Login Handler. User not registered.");
+            log.error("User {} not registered.", userName);
             incomeChannel.write(BAD_RESPONSE);
             return;
         }
@@ -56,7 +60,7 @@ public class LoginChannelHandler extends SimpleChannelHandler {
 
         //todo fix pass validation
         if (!user.getPass().equals(pass)) {
-            System.out.println("Login Handler. Bad password. Please try again.");
+            log.error("Bad password. Please try again.");
             incomeChannel.write(BAD_RESPONSE);
             return;
         }
@@ -68,13 +72,13 @@ public class LoginChannelHandler extends SimpleChannelHandler {
             DefaultChannelGroup group = GroupHolder.getPrivateRooms().get(user);
             //only one side came
             if (group == null) {
-                System.out.println("Creating unique group for token: " + user);
+                log.info("Creating unique group for user: {}", user);
                 group = new DefaultChannelGroup(user.getName());
                 GroupHolder.getPrivateRooms().put(user, group);
             }
 
             group.add(incomeChannel);
-            System.out.println("Adding channel with id " + incomeChannel.getId() + " and token " + user.getName() + " to group.");
+            log.info("Adding channel with id {} to userGroup {}.", incomeChannel.getId(), user.getName());
         }
 
         incomeChannel.write(OK_RESPONSE);
@@ -86,9 +90,9 @@ public class LoginChannelHandler extends SimpleChannelHandler {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
-        e.getCause().printStackTrace();
+        log.error("Error in Login Handler.", e);
 
         Channel ch = e.getChannel();
-               ch.close();
+        ch.close();
     }
 }

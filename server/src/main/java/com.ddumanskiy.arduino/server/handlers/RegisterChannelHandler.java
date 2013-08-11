@@ -3,6 +3,8 @@ package com.ddumanskiy.arduino.server.handlers;
 
 import com.ddumanskiy.arduino.auth.EMailValidator;
 import com.ddumanskiy.arduino.auth.UserRegistry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.*;
 
 import static com.ddumanskiy.arduino.common.Consts.BAD_RESPONSE;
@@ -22,6 +24,8 @@ import static com.ddumanskiy.arduino.common.Consts.OK_RESPONSE;
  */
 public class RegisterChannelHandler extends SimpleChannelHandler {
 
+    private static final Logger log = LogManager.getLogger(RegisterChannelHandler.class);
+
     private static final String REGISTER_TOKEN = "register";
 
     @Override
@@ -37,10 +41,9 @@ public class RegisterChannelHandler extends SimpleChannelHandler {
             return;
         }
 
-        System.out.println("Register Handler.");
         //expecting message with 3 parts, described above in comment.
         if (messageParts.length != 3) {
-            System.out.println("Register Handler. Wrong income message format.");
+            log.error("Register Handler. Wrong income message format.");
             incomeChannel.write(BAD_RESPONSE);
             return;
         }
@@ -48,21 +51,21 @@ public class RegisterChannelHandler extends SimpleChannelHandler {
         String user = messageParts[1];
         //TODO encryption, SSL sockets.
         String pass = messageParts[2];
-        System.out.println("Register Handler. User : " + user);
+        log.info("Trying register user : {}", user);
 
         if (!EMailValidator.isValid(user)) {
-            System.out.println("Register Handler. Wrong email.");
+            log.error("Register Handler. Wrong email: {}", user);
             incomeChannel.write(BAD_RESPONSE);
             return;
         }
 
         if (UserRegistry.isUserExists(user)) {
-            System.out.println("Register Handler. User with that name already exists.");
+            log.error("User with name {} already exists.", user);
             incomeChannel.write(BAD_RESPONSE);
             return;
         }
 
-        System.out.println("Register Handler. Registering.");
+        log.info("Registering {}.", user);
 
         UserRegistry.createNewUser(user, pass);
         incomeChannel.write(OK_RESPONSE);
@@ -74,9 +77,9 @@ public class RegisterChannelHandler extends SimpleChannelHandler {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
-        e.getCause().printStackTrace();
+       log.error("Error in Register Handler.", e);
 
         Channel ch = e.getChannel();
-               ch.close();
+        ch.close();
     }
 }
