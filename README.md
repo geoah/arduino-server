@@ -17,3 +17,5 @@ Where pupkin@mail.ua your email and pupkin_pass your pass. Now you are ready to 
 
 Clients with same username token will be grouped within one room/group. And can send messages to each other.
 
+Registered users are stored locally in TMP dir of your system. So after restart you don't have to register again.
+
