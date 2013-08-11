@@ -10,6 +10,10 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 
+import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.ddumanskiy.arduino.common.Consts.BAD_RESPONSE;
 import static com.ddumanskiy.arduino.common.Consts.OK_RESPONSE;
 
@@ -21,6 +25,8 @@ import static com.ddumanskiy.arduino.common.Consts.OK_RESPONSE;
 public class LoginChannelHandler extends SimpleChannelHandler {
 
     private static final Logger log = LogManager.getLogger(LoginChannelHandler.class);
+
+    private final Map<String, Integer> brutterDefence = new HashMap<String, Integer>();
 
     private static final String LOGIN_TOKEN = "login";
 
@@ -56,12 +62,23 @@ public class LoginChannelHandler extends SimpleChannelHandler {
 
         User user = UserRegistry.getByName(userName);
 
-        //todo fix for brute force
+        //key == userName + host;
+        String key = userName + ((InetSocketAddress) incomeChannel.getRemoteAddress()).getHostName();
+
+        if (brutterDefence.get(key) != null && brutterDefence.get(key) > 5) {
+            log.error("Too many tries for login from 1 host. Blocking until server restart.");
+            incomeChannel.write(BAD_RESPONSE);
+            return;
+        }
 
         //todo fix pass validation
         if (!user.getPass().equals(pass)) {
             log.error("Bad password. Please try again.");
             incomeChannel.write(BAD_RESPONSE);
+
+            Integer tries = brutterDefence.get(key);
+            brutterDefence.put(key, tries == null ? 1 : ++tries);
+
             return;
         }
 
