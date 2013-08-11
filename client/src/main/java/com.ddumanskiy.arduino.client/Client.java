@@ -22,18 +22,16 @@ public class Client {
 
     private int port;
     private String host;
-    private String authToken;
 
-    public Client(int port, String host, String authToken) {
+    public Client(int port, String host) {
         this.port = port;
         this.host = host;
-        this.authToken = authToken;
     }
 
     public static void main(String[] args) {
-        if (args.length < 3) {
+        if (args.length < 2) {
             System.out.println("You need to specify server host, port and auth token.");
-            System.out.println("For instance: 'java -jar client.jar localhost 8080 auth_abc'");
+            System.out.println("For instance: 'java -jar client.jar localhost 8080'");
             return;
         }
 
@@ -42,9 +40,8 @@ public class Client {
         if (port == null) {
             return;
         }
-        String authToken = args[2];
 
-        new Client(port, host, authToken).start();
+        new Client(port, host).start();
     }
 
     public void start() {
@@ -58,7 +55,7 @@ public class Client {
             public ChannelPipeline getPipeline() {
                 return Channels.pipeline(
                         new LineBasedFrameDecoder(Consts.MAX_AUTH_STRING_LENGTH),
-                        new AuthCommandSender(authToken)
+                        new AuthCommandSender()
                 );
             }
         });

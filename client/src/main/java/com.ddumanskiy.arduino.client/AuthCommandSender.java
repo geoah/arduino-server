@@ -1,7 +1,6 @@
 package com.ddumanskiy.arduino.client;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.*;
 
 /**
@@ -11,20 +10,16 @@ import org.jboss.netty.channel.*;
  */
 public class AuthCommandSender extends SimpleChannelHandler {
 
-    private String authToken;
+    public AuthCommandSender() {
 
-    public AuthCommandSender(String authToken) {
-        if (authToken == null) {
-            throw new NullPointerException("Can't send null authToken.");
-        }
-        this.authToken = authToken + System.getProperty("line.separator");
     }
 
     @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+
         Channel serverChannel = e.getChannel();
-        ChannelBuffer messageBuffer = ChannelBuffers.copiedBuffer(authToken.getBytes());
-        serverChannel.write(messageBuffer);
+        //ChannelBuffer messageBuffer = ChannelBuffers.copiedBuffer(authToken.getBytes());
+        //serverChannel.write(messageBuffer);
 
         new Thread(new ConsoleMessagesSender(serverChannel)).start();
     }

@@ -13,4 +13,6 @@ public abstract class Consts {
 
     public static final String OK_RESPONSE = "ok" + LINE_SEPARATOR;
 
+    public static final String BAD_RESPONSE = "bad" + LINE_SEPARATOR;
+
 }

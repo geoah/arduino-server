@@ -1,7 +1,9 @@
 package com.ddumanskiy.arduino.server;
 
 import com.ddumanskiy.arduino.common.Consts;
-import com.ddumanskiy.arduino.server.handlers.AuthChannelHandler;
+import com.ddumanskiy.arduino.server.handlers.LoginChannelHandler;
+import com.ddumanskiy.arduino.server.handlers.RegisterChannelHandler;
+import com.ddumanskiy.arduino.server.handlers.WorkerChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
@@ -24,7 +26,9 @@ public class ChannelsPipe implements ChannelPipelineFactory {
                 new LineBasedFrameDecoder(Consts.MAX_AUTH_STRING_LENGTH),
                 new StringDecoder(),
                 new StringEncoder(),
-                new AuthChannelHandler()
+                new RegisterChannelHandler(),
+                new LoginChannelHandler(),
+                new WorkerChannelHandler()
         );
     }
 }

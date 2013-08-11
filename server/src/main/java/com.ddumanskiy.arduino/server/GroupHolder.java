@@ -1,6 +1,7 @@
 package com.ddumanskiy.arduino.server;
 
 
+import com.ddumanskiy.arduino.user.User;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 
 import java.util.Map;
@@ -13,9 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class GroupHolder {
 
-    private static Map<String, DefaultChannelGroup> privateRooms = new ConcurrentHashMap<String, DefaultChannelGroup>();
+    private static Map<User, DefaultChannelGroup> privateRooms = new ConcurrentHashMap<User, DefaultChannelGroup>();
 
-    public static Map<String, DefaultChannelGroup> getPrivateRooms() {
+    public static Map<User, DefaultChannelGroup> getPrivateRooms() {
         return privateRooms;
     }
 
