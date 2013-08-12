@@ -3,6 +3,7 @@ package com.ddumanskiy.arduino.server.handlers;
 
 import com.ddumanskiy.arduino.auth.EMailValidator;
 import com.ddumanskiy.arduino.auth.UserRegistry;
+import com.ddumanskiy.arduino.mail.MailTLS;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.*;
@@ -68,6 +69,8 @@ public class RegisterChannelHandler extends SimpleChannelHandler {
         log.info("Registering {}.", user);
 
         UserRegistry.createNewUser(user, pass);
+        MailTLS mailSender = new MailTLS();
+        mailSender.sendMail("user", "You just registered to Arduino control", "Enjoy!");
         incomeChannel.write(OK_RESPONSE);
     }
 
