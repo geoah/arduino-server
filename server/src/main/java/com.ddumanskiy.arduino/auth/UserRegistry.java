@@ -36,8 +36,8 @@ public final class UserRegistry {
     }
 
 
-    public static void createNewUser(String name, String pass) {
-        User newUser = new User(name, pass);
+    public static void createNewUser(String name, String pass, String id) {
+        User newUser = new User(name, pass, id);
         users.putIfAbsent(name, newUser);
 
         //todo, yes this not optimal solution, but who cares?

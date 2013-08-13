@@ -8,6 +8,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.*;
 
+import java.util.UUID;
+
 import static com.ddumanskiy.arduino.common.Consts.BAD_RESPONSE;
 import static com.ddumanskiy.arduino.common.Consts.OK_RESPONSE;
 
@@ -68,9 +70,10 @@ public class RegisterChannelHandler extends SimpleChannelHandler {
 
         log.info("Registering {}.", user);
 
-        UserRegistry.createNewUser(user, pass);
-        MailTLS mailSender = new MailTLS();
-        mailSender.sendMail("user", "You just registered to Arduino control", "Enjoy!");
+        String id = UUID.randomUUID().toString();
+
+        UserRegistry.createNewUser(user, pass, id);
+        MailTLS.sendMail(user, "You just registered to Arduino control.", id);
         incomeChannel.write(OK_RESPONSE);
     }
 

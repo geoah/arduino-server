@@ -1,0 +1,24 @@
+Hello,
+
+This is Arduino control project.
+Insert below snippet of code to start work:
+
+void loop()
+{
+  // if the server's disconnected, stop the client:
+    if (!client.connected()) {
+        client.stop();
+        //try to reconect
+        if (client.connect(server, port)) {
+            Serial.println("reconnected..");
+            client.println("login {ID}");
+        } else {
+            delay(1000);
+        }
+    } else if (client.available()) {
+        char c = client.read();
+        processIncomingChar(c);
+    } else {
+        sendReadValues();
+    }
+}

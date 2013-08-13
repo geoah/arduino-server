@@ -15,7 +15,9 @@ Next command is "login pupkin@mail.ua pupkin_pass".
 
 Where pupkin@mail.ua your email and pupkin_pass your pass. Now you are ready to send messages.
 
+When registering email is send to provided login name with code snippet required for start.
+
 Clients with same username token will be grouped within one room/group. And can send messages to each other.
 
-Registered users are stored locally in TMP dir of your system. So after restart you don't have to register again.
+Registered users are stored locally in TMP dir of your system in file "user.db". So after restart you don't have to register again.
 

@@ -15,11 +15,14 @@ public class User implements Serializable {
 
     private String pass;
 
+    private String id;
+
     private Object data;
 
-    public User(String name, String pass) {
+    public User(String name, String pass, String id) {
         this.name = name;
         this.pass = pass;
+        this.id = id;
     }
 
     public String getName() {
@@ -44,6 +47,14 @@ public class User implements Serializable {
 
     public void setData(Object data) {
         this.data = data;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override
