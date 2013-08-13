@@ -15,6 +15,14 @@
 
     <packaging>pom</packaging>
 
+    <repositories>
+        <repository>
+            <id>jboss-public-repository-group</id>
+            <name>JBoss Public Maven Repository Group</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+        </repository>
+    </repositories>
+
 
     <build>
         <plugins>
@@ -57,10 +65,12 @@
         </dependency>
 
         <!-- todo kill this and replace with native javaee lib -->
+
+
         <dependency>
             <groupId>org.jboss.spec</groupId>
-            <artifactId>jboss-javaee-6.0</artifactId>
-            <version>1.0.0.Final</version>
+            <artifactId>jboss-javaee-all-6.0</artifactId>
+            <version>3.0.0.Final</version>
         </dependency>
 
         <dependency>
