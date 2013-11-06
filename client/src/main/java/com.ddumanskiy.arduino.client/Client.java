@@ -1,15 +1,14 @@
 package com.ddumanskiy.arduino.client;
 
-import com.ddumanskiy.arduino.common.Consts;
 import com.ddumanskiy.arduino.common.Utils;
 import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-import org.jboss.netty.handler.codec.frame.LineBasedFrameDecoder;
+import org.jboss.netty.handler.codec.frame.LengthFieldBasedFrameDecoder;
+import org.jboss.netty.handler.codec.frame.LengthFieldPrepender;
+import org.jboss.netty.handler.codec.string.StringEncoder;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
@@ -55,7 +54,13 @@ public class Client {
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
             public ChannelPipeline getPipeline() {
                 return Channels.pipeline(
-                        new LineBasedFrameDecoder(Consts.MAX_AUTH_STRING_LENGTH),
+                        //downstream
+                        new LengthFieldPrepender(2),
+                        new StringEncoder(),
+
+
+                        //upstream
+                        new LengthFieldBasedFrameDecoder(Short.MAX_VALUE, 0, 2, 0, 2),
                         new ServerResponsePrinter()
                 );
             }
@@ -77,14 +82,12 @@ public class Client {
 
     }
 
-    private void readUserInput(Channel serverChannel) throws IOException {
+    private void readUserInput(Channel serverChannel) throws Exception {
         BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in));
 
         String line;
         while ((line = consoleInput.readLine()) != null) {
-            serverChannel.write(
-                    ChannelBuffers.copiedBuffer((line + System.getProperty("line.separator")).getBytes())
-            );
+            serverChannel.write(line);
         }
     }
 

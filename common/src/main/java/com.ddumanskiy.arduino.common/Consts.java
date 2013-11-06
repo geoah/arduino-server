@@ -7,12 +7,8 @@ package com.ddumanskiy.arduino.common;
  */
 public abstract class Consts {
 
-    public static final int MAX_AUTH_STRING_LENGTH = 100;
+    public static final String OK_RESPONSE = "ok";
 
-    public static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
-    public static final String OK_RESPONSE = "ok" + LINE_SEPARATOR;
-
-    public static final String BAD_RESPONSE = "bad" + LINE_SEPARATOR;
+    public static final String BAD_RESPONSE = "bad";
 
 }

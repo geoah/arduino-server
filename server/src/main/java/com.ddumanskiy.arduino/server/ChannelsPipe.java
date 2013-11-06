@@ -1,13 +1,13 @@
 package com.ddumanskiy.arduino.server;
 
-import com.ddumanskiy.arduino.common.Consts;
 import com.ddumanskiy.arduino.server.handlers.LoginChannelHandler;
 import com.ddumanskiy.arduino.server.handlers.RegisterChannelHandler;
 import com.ddumanskiy.arduino.server.handlers.WorkerChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
-import org.jboss.netty.handler.codec.frame.LineBasedFrameDecoder;
+import org.jboss.netty.handler.codec.frame.LengthFieldBasedFrameDecoder;
+import org.jboss.netty.handler.codec.frame.LengthFieldPrepender;
 import org.jboss.netty.handler.codec.string.StringDecoder;
 import org.jboss.netty.handler.codec.string.StringEncoder;
 
@@ -23,9 +23,13 @@ public class ChannelsPipe implements ChannelPipelineFactory {
     @Override
     public ChannelPipeline getPipeline() throws Exception {
         return Channels.pipeline(
-                new LineBasedFrameDecoder(Consts.MAX_AUTH_STRING_LENGTH),
-                new StringDecoder(),
+                //downstream
+                new LengthFieldPrepender(2),
                 new StringEncoder(),
+
+                //upstream
+                new LengthFieldBasedFrameDecoder(Short.MAX_VALUE, 0, 2, 0, 2),
+                new StringDecoder(),
                 new RegisterChannelHandler(),
                 new LoginChannelHandler(),
                 new WorkerChannelHandler()

@@ -13,7 +13,6 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 
 import java.util.Iterator;
 
-import static com.ddumanskiy.arduino.common.Consts.LINE_SEPARATOR;
 import static com.ddumanskiy.arduino.common.Consts.OK_RESPONSE;
 
 /**
@@ -45,7 +44,7 @@ public class WorkerChannelHandler extends SimpleChannelHandler {
             //sending message for all except those one that sends
             if (!current.getId().equals(incomeChannel.getId())) {
                 log.info("Found channel to send message to " + current.getId() + ", message: " + message);
-                current.write(message + LINE_SEPARATOR);
+                current.write(message);
             }
         }
 

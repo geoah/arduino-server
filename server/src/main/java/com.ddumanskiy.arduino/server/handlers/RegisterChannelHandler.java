@@ -83,7 +83,8 @@ public class RegisterChannelHandler extends SimpleChannelHandler {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
-       log.error("Error in Register Handler.", e);
+       log.error("Error in Register Handler.");
+       log.error(e);
 
         Channel ch = e.getChannel();
         ch.close();
