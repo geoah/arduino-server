@@ -3,13 +3,14 @@ package com.ddumanskiy.arduino.client;
 import com.ddumanskiy.arduino.common.Consts;
 import com.ddumanskiy.arduino.common.Utils;
 import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
+import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.handler.codec.frame.LineBasedFrameDecoder;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
@@ -55,7 +56,7 @@ public class Client {
             public ChannelPipeline getPipeline() {
                 return Channels.pipeline(
                         new LineBasedFrameDecoder(Consts.MAX_AUTH_STRING_LENGTH),
-                        new AuthCommandSender()
+                        new ServerResponsePrinter()
                 );
             }
         });
@@ -63,7 +64,28 @@ public class Client {
         bootstrap.setOption("tcpNoDelay", true);
         bootstrap.setOption("keepAlive", true);
 
-        bootstrap.connect(new InetSocketAddress(host, port));
+        ChannelFuture f = null;
+        try {
+            // Start the client.
+            f = bootstrap.connect(new InetSocketAddress(host, port)).sync();
+
+            readUserInput(f.getChannel());
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    private void readUserInput(Channel serverChannel) throws IOException {
+        BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in));
+
+        String line;
+        while ((line = consoleInput.readLine()) != null) {
+            serverChannel.write(
+                    ChannelBuffers.copiedBuffer((line + System.getProperty("line.separator")).getBytes())
+            );
+        }
     }
 
 }

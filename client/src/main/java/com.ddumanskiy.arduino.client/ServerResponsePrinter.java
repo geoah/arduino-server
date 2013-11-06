@@ -1,27 +1,20 @@
 package com.ddumanskiy.arduino.client;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.*;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ExceptionEvent;
+import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.channel.SimpleChannelHandler;
 
 /**
  * User: ddumanskiy
  * Date: 6/15/13
  * Time: 8:14 PM
  */
-public class AuthCommandSender extends SimpleChannelHandler {
+public class ServerResponsePrinter extends SimpleChannelHandler {
 
-    public AuthCommandSender() {
+    public ServerResponsePrinter() {
 
-    }
-
-    @Override
-    public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-
-        Channel serverChannel = e.getChannel();
-        //ChannelBuffer messageBuffer = ChannelBuffers.copiedBuffer(authToken.getBytes());
-        //serverChannel.write(messageBuffer);
-
-        new Thread(new ConsoleMessagesSender(serverChannel)).start();
     }
 
     @Override
