@@ -1,8 +1,6 @@
 package com.ddumanskiy.arduino.server;
 
-import com.ddumanskiy.arduino.server.handlers.LoginChannelHandler;
-import com.ddumanskiy.arduino.server.handlers.RegisterChannelHandler;
-import com.ddumanskiy.arduino.server.handlers.WorkerChannelHandler;
+import com.ddumanskiy.arduino.server.handlers.*;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
@@ -32,6 +30,8 @@ public class ChannelsPipe implements ChannelPipelineFactory {
                 new StringDecoder(),
                 new RegisterChannelHandler(),
                 new LoginChannelHandler(),
+                new SaveProfileHandler(),
+                new LoadProfileHandler(),
                 new WorkerChannelHandler()
         );
     }

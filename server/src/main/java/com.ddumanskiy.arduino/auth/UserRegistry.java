@@ -35,6 +35,9 @@ public final class UserRegistry {
         return users.get(name);
     }
 
+    public static void save() {
+        Serializer.serialize(users);
+    }
 
     public static void createNewUser(String name, String pass, String id) {
         User newUser = new User(name, pass, id);

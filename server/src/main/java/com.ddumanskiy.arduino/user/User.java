@@ -17,7 +17,7 @@ public class User implements Serializable {
 
     private String id;
 
-    private Object data;
+    private String data;
 
     public User(String name, String pass, String id) {
         this.name = name;
@@ -41,11 +41,11 @@ public class User implements Serializable {
         this.pass = pass;
     }
 
-    public Object getData() {
+    public String getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(String data) {
         this.data = data;
     }
 

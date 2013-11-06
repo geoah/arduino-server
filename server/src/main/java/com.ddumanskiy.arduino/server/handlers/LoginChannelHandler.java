@@ -107,7 +107,8 @@ public class LoginChannelHandler extends SimpleChannelHandler {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
-        log.error("Error in Login Handler.", e);
+        log.error("Error in {}", this.getClass().getName());
+        log.error(e.getCause());
 
         Channel ch = e.getChannel();
         ch.close();
