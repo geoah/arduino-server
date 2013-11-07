@@ -22,7 +22,15 @@ So message is always "2 bytes + messageBody.length"; Max message length is (2^15
 	loadProfile
 
 ## User Profile JSON structure
-	UserProfile : {"settings":["boardType":"UNO", ..., "someParam":"someValue"], "dashBoards":[{"id":1, "name":"My Dashboard", "active":true, "widgets": [...]}]}
+	UserProfile : { "dashBoards" : 
+		[ 
+			{
+			 "id":1, "name":"My Dashboard", "active":true, 
+			 "widgets"  : [...], 
+			 "settings" : ["boardType":"UNO", ..., "someParam":"someValue"]
+			}
+		]
+	}
 
 ## Widgets JSON structure
 
