@@ -17,7 +17,7 @@ So message is always "2 bytes + messageBody.length"; Max message length is (2^15
 
 ## COMMANDS
 	register (usage "register pupkin@mail.ru pupkin")
-	login (usage "register pupkin@mail.ru pupkin")
+	login (usage "login pupkin@mail.ru pupkin")
 	saveProfile (usage "saveProfile {...}")
 	loadProfile
 
