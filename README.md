@@ -27,7 +27,7 @@ So message is always "2 bytes + messageBody.length"; Max message length is (2^15
 			{
 			 "id":1, "name":"My Dashboard", "active":true, 
 			 "widgets"  : [...], 
-			 "settings" : ["boardType":"UNO", ..., "someParam":"someValue"]
+			 "settings" : {"boardType":"UNO", ..., "someParam":"someValue"}
 			}
 		]
 	}
