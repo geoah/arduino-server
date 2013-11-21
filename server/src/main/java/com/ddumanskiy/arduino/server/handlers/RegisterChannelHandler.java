@@ -51,7 +51,7 @@ public class RegisterChannelHandler extends SimpleChannelHandler {
             return;
         }
 
-        String user = messageParts[1];
+        String user = messageParts[1].toLowerCase();
         //TODO encryption, SSL sockets.
         String pass = messageParts[2];
         log.info("Trying register user : {}", user);

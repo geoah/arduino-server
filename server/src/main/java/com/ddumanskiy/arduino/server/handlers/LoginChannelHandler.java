@@ -49,7 +49,7 @@ public class LoginChannelHandler extends SimpleChannelHandler {
         }
 
 
-        String userName = messageParts[1];
+        String userName = messageParts[1].toLowerCase();
         //TODO encryption, SSL sockets.
         String pass = messageParts[2];
         log.info("User : {}", userName);
