@@ -1,0 +1,21 @@
+{
+    "dashBoards" :
+        [
+            {
+             "id":1,
+             "name":"My Dashboard",
+             "isActive":true,
+             "widgets"  : [
+                {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"BUTTON",         "pin":"D13", "value":"1"},
+                {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"TOGGLE_BUTTON",  "pin":"D18", "value":"1", "state":"ON"},
+                {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"TOGGLE_BUTTON",  "pin":"D18", "value":"0", "state":"OFF"},
+                {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"SLIDER",         "pin":"A18", "value":"244" },
+                {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"TIMER",          "pin":"D13", "value":"1", "startTime" : 1111111111, "stopTime" : 111111111},
+                {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"LED",            "pin":"D10"},
+                {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"DIGIT4_DISPLAY", "pin":"D10"},
+                {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"GRAPH",          "pin":"D10"}
+             ],
+             "settings" : {"boardType":"UNO", "someParam":"someValue"}
+            }
+        ]
+}

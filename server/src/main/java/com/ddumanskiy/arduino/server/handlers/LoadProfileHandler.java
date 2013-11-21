@@ -35,7 +35,7 @@ public class LoadProfileHandler extends SimpleChannelHandler {
             return;
         }
 
-        incomeChannel.write(authUser.getData() == null ? "" : authUser.getData());
+        incomeChannel.write(authUser.getUserProfile() == null ? "{}" : authUser.getUserProfile());
     }
 
     private boolean isLoadProfileAction(String actionName) {

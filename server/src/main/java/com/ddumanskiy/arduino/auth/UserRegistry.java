@@ -35,6 +35,7 @@ public final class UserRegistry {
         return users.get(name);
     }
 
+    //todo dave every uses separately
     public static void save() {
         Serializer.serialize(users);
     }

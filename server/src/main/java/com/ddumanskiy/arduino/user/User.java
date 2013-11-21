@@ -1,5 +1,7 @@
 package com.ddumanskiy.arduino.user;
 
+import com.ddumanskiy.arduino.model.UserProfile;
+
 import java.io.Serializable;
 
 /**
@@ -17,7 +19,7 @@ public class User implements Serializable {
 
     private String id;
 
-    private String data;
+    private UserProfile userProfile;
 
     public User(String name, String pass, String id) {
         this.name = name;
@@ -41,12 +43,12 @@ public class User implements Serializable {
         this.pass = pass;
     }
 
-    public String getData() {
-        return data;
+    public UserProfile getUserProfile() {
+        return userProfile;
     }
 
-    public void setData(String data) {
-        this.data = data;
+    public void setUserProfile(UserProfile userProfile) {
+        this.userProfile = userProfile;
     }
 
     public String getId() {

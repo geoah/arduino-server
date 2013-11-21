@@ -3,7 +3,9 @@ package com.ddumanskiy.arduino.server.handlers;
 
 import com.ddumanskiy.arduino.auth.Session;
 import com.ddumanskiy.arduino.auth.UserRegistry;
+import com.ddumanskiy.arduino.model.UserProfile;
 import com.ddumanskiy.arduino.user.User;
+import com.ddumanskiy.arduino.utils.JsonParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.*;
@@ -41,9 +43,17 @@ public class SaveProfileHandler extends SimpleChannelHandler {
             return;
         }
 
-        String userProfile = messageParts[1];
+        String userProfileString = messageParts[1];
 
-        log.info("Trying save user : {}", userProfile);
+        log.info("Trying to parse user profile : {}", userProfileString);
+        UserProfile userProfile = JsonParser.parse(userProfileString);
+        if (userProfile == null) {
+            log.error("Register Handler. Wrong user profile message format.");
+            incomeChannel.write(BAD_RESPONSE);
+            return;
+        }
+
+        log.info("Trying save user profile.");
 
         User authUser = Session.getChannelToken().get(incomeChannel.getId());
         if (authUser == null) {
@@ -52,7 +62,7 @@ public class SaveProfileHandler extends SimpleChannelHandler {
             return;
         }
 
-        authUser.setData(userProfile);
+        authUser.setUserProfile(userProfile);
         UserRegistry.save();
 
         incomeChannel.write(OK_RESPONSE);
