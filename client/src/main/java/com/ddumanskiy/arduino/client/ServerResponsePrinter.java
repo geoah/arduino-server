@@ -30,7 +30,7 @@ public class ServerResponsePrinter extends SimpleChannelHandler {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
-        e.getCause().printStackTrace();
+        log.error(e);
         e.getChannel().close();
     }
 

@@ -1,5 +1,6 @@
 package com.ddumanskiy.arduino.common.encoders;
 
+import com.ddumanskiy.arduino.common.Utils;
 import com.ddumanskiy.arduino.common.message.Message;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,24 +10,19 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
-import java.nio.charset.Charset;
-
 /**
  * User: ddumanskiy
  * Date: 06.12.13
  * Time: 14:46
  */
-public class MessageIdEncoder extends OneToOneEncoder {
+public class MessageId2BytesEncoder extends OneToOneEncoder {
 
-    private static final Logger log = LogManager.getLogger(MessageIdEncoder.class);
+    private static final Logger log = LogManager.getLogger(MessageId2BytesEncoder.class);
 
-    private int messageIdLength;
+    private static final int MESSAGE_ID_FIELD_LENGTH_BYTES = 2;
 
-    private static final Charset defaultCharset = Charset.defaultCharset();
-
-    public MessageIdEncoder(int messageIdLength) {
+    public MessageId2BytesEncoder() {
         super();
-        this.messageIdLength = messageIdLength;
     }
 
     @Override
@@ -37,12 +33,12 @@ public class MessageIdEncoder extends OneToOneEncoder {
 
         log.info("Sending : {}", msg);
 
-        ChannelBuffer messageIdBuffer = ChannelBuffers.buffer(messageIdLength);
+        ChannelBuffer messageIdBuffer = ChannelBuffers.buffer(MESSAGE_ID_FIELD_LENGTH_BYTES);
         messageIdBuffer.writeShort(((Message) msg).getMessageId());
 
         return ChannelBuffers.wrappedBuffer(
                 messageIdBuffer,
-                ChannelBuffers.copiedBuffer(((Message) msg).getBody(), defaultCharset)
+                ChannelBuffers.copiedBuffer(((Message) msg).getBody(), Utils.DEFAULT_CHARSET)
         );
     }
 }

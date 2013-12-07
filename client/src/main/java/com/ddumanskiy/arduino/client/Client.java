@@ -1,8 +1,8 @@
 package com.ddumanskiy.arduino.client;
 
 import com.ddumanskiy.arduino.common.Utils;
-import com.ddumanskiy.arduino.common.decoders.MessageIdDecoder;
-import com.ddumanskiy.arduino.common.encoders.MessageIdEncoder;
+import com.ddumanskiy.arduino.common.decoders.MessageId2BytesDecoder;
+import com.ddumanskiy.arduino.common.encoders.MessageId2BytesEncoder;
 import com.ddumanskiy.arduino.common.message.Message;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;
@@ -59,11 +59,11 @@ public class Client {
                 return Channels.pipeline(
                         //downstream
                         new LengthFieldPrepender(2),
-                        new MessageIdEncoder(2),
+                        new MessageId2BytesEncoder(),
 
                         //upstream
                         new LengthFieldBasedFrameDecoder(Short.MAX_VALUE, 0, 2, 0, 2),
-                        new MessageIdDecoder(2),
+                        new MessageId2BytesDecoder(),
                         new ServerResponsePrinter()
                 );
             }
@@ -72,7 +72,7 @@ public class Client {
         bootstrap.setOption("tcpNoDelay", true);
         bootstrap.setOption("keepAlive", true);
 
-        ChannelFuture f = null;
+        ChannelFuture f;
         try {
             // Start the client.
             f = bootstrap.connect(new InetSocketAddress(host, port)).sync();

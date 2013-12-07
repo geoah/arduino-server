@@ -17,6 +17,7 @@ public class ResponseCode {
     public static final String USER_NOT_AUTHENTICATED = new ResponseCode(5).toString();
     public static final String NOT_ALLOWED = new ResponseCode(6).toString();
     public static final String DEVICE_NOT_IN_NETWORK = new ResponseCode(7).toString();
+    public static final String NOT_SUPPORTED_COMMAND = new ResponseCode(8).toString();
 
     private int responseCode;
 

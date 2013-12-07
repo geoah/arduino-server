@@ -1,9 +1,5 @@
 package com.ddumanskiy.arduino.common.message;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-
-import java.nio.charset.Charset;
-
 /**
  * User: ddumanskiy
  * Date: 07.12.13
@@ -15,20 +11,12 @@ public class Message {
 
     private String body;
 
-    private static final Charset defaultCharset = Charset.defaultCharset();
+    public Message() {
+    }
 
     public Message(short messageId, String body) {
         this.messageId = messageId;
         this.body = body;
-    }
-
-    public Message(ChannelBuffer cb) {
-        //todo here depending on messageID field length should be different method invocation
-        messageId = cb.readShort();
-        body = cb.toString(defaultCharset);
-
-        //this is just for netty. moving read index to the end
-        cb.readerIndex(cb.capacity());
     }
 
     public short getMessageId() {

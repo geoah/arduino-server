@@ -12,23 +12,39 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import static com.ddumanskiy.arduino.response.ResponseCode.*;
 
 /**
- * User: DOOM
+ * User: ddumanskiy
  * Date: 8/11/13
  * Time: 3:38 PM
  */
-public class WorkerChannelHandler extends SimpleChannelHandler {
+public class ArduinoCommandsHandler extends SimpleChannelHandler {
 
-    private static final Logger log = LogManager.getLogger(WorkerChannelHandler.class);
+    private static final Logger log = LogManager.getLogger(ArduinoCommandsHandler.class);
+
+    private static final String[] ALLOWED_COMMANDS = new String[] {
+            "digitalWrite",
+            "digitalRead",
+            "analogWrite",
+            "analogRead"
+    };
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
         final Channel incomeChannel = e.getChannel();
         final Message message = (Message) e.getMessage();
 
+        String[] messageParts = message.getBody().split(" ");
+
+        if (!isArduinoCommand(messageParts[0])) {
+            log.error("Command not supported - {}.", messageParts[0]);
+            message.setBody(NOT_SUPPORTED_COMMAND);
+            incomeChannel.write(message);
+            return;
+        }
+
         //this means not authentificated attempt
         User authUser = Session.getChannelToken().get(incomeChannel.getId());
         if (authUser == null) {
-            log.error("Channel not authorized. Send login first. Closing socket.");
+            log.error("Channel not authorized. Send login first.");
             message.setBody(USER_NOT_AUTHENTICATED);
             incomeChannel.write(message);
             return;
@@ -58,6 +74,15 @@ public class WorkerChannelHandler extends SimpleChannelHandler {
                 });
             }
         }
+    }
+
+    private static boolean isArduinoCommand(String commandString) {
+        for (String allowedCommand : ALLOWED_COMMANDS) {
+            if (commandString.startsWith(allowedCommand)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
