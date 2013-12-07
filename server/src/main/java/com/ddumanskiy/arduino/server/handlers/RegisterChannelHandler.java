@@ -10,8 +10,7 @@ import org.jboss.netty.channel.*;
 
 import java.util.UUID;
 
-import static com.ddumanskiy.arduino.common.Consts.BAD_RESPONSE;
-import static com.ddumanskiy.arduino.common.Consts.OK_RESPONSE;
+import static com.ddumanskiy.arduino.response.ResponseCode.*;
 
 /**
  * Get input message. Checks if it is a register command.
@@ -47,7 +46,7 @@ public class RegisterChannelHandler extends SimpleChannelHandler {
         //expecting message with 3 parts, described above in comment.
         if (messageParts.length != 3) {
             log.error("Register Handler. Wrong income message format.");
-            incomeChannel.write(BAD_RESPONSE);
+            incomeChannel.write(INVALID_COMMAND_FORMAT);
             return;
         }
 
@@ -58,13 +57,13 @@ public class RegisterChannelHandler extends SimpleChannelHandler {
 
         if (!EMailValidator.isValid(user)) {
             log.error("Register Handler. Wrong email: {}", user);
-            incomeChannel.write(BAD_RESPONSE);
+            incomeChannel.write(INVALID_COMMAND_FORMAT);
             return;
         }
 
         if (UserRegistry.isUserExists(user)) {
             log.error("User with name {} already exists.", user);
-            incomeChannel.write(BAD_RESPONSE);
+            incomeChannel.write(USER_ALREADY_REGISTERED);
             return;
         }
 
@@ -74,7 +73,7 @@ public class RegisterChannelHandler extends SimpleChannelHandler {
 
         UserRegistry.createNewUser(user, pass, id);
         MailTLS.sendMail(user, "You just registered to Arduino control.", id);
-        incomeChannel.write(OK_RESPONSE);
+        incomeChannel.write(OK);
     }
 
     private boolean isRegisterAction(String actionName) {

@@ -14,8 +14,7 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.ddumanskiy.arduino.common.Consts.BAD_RESPONSE;
-import static com.ddumanskiy.arduino.common.Consts.OK_RESPONSE;
+import static com.ddumanskiy.arduino.response.ResponseCode.*;
 
 /**
  * User: ddumanskiy
@@ -44,7 +43,7 @@ public class LoginChannelHandler extends SimpleChannelHandler {
 
         if (messageParts.length != 3) {
             log.error("Wrong income message format.");
-            incomeChannel.write(BAD_RESPONSE);
+            incomeChannel.write(INVALID_COMMAND_FORMAT);
             return;
         }
 
@@ -56,7 +55,7 @@ public class LoginChannelHandler extends SimpleChannelHandler {
 
         if (!UserRegistry.isUserExists(userName)) {
             log.error("User {} not registered.", userName);
-            incomeChannel.write(BAD_RESPONSE);
+            incomeChannel.write(USER_NOT_REGISTERED);
             return;
         }
 
@@ -67,14 +66,14 @@ public class LoginChannelHandler extends SimpleChannelHandler {
 
         if (brutterDefence.get(key) != null && brutterDefence.get(key) > 5) {
             log.error("Too many tries for login from 1 host. Blocking until server restart.");
-            incomeChannel.write(BAD_RESPONSE);
+            incomeChannel.write(NOT_ALLOWED);
             return;
         }
 
         //todo fix pass validation
         if (!user.getPass().equals(pass)) {
             log.error("Bad password. Please try again.");
-            incomeChannel.write(BAD_RESPONSE);
+            incomeChannel.write(USER_NOT_AUTHENTICATED);
 
             Integer tries = brutterDefence.get(key);
             brutterDefence.put(key, tries == null ? 1 : ++tries);
@@ -98,7 +97,7 @@ public class LoginChannelHandler extends SimpleChannelHandler {
             log.info("Adding channel with id {} to userGroup {}.", incomeChannel.getId(), user.getName());
         }
 
-        incomeChannel.write(OK_RESPONSE);
+        incomeChannel.write(OK);
     }
 
     private boolean isLoginToken(String actionName) {

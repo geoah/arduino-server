@@ -28,11 +28,11 @@ public final class JsonParser {
 
     }
 
-    public static String toJson(UserProfile userProfile) {
+    public static String toJson(Object object) {
         try {
-            return mapper.writeValueAsString(userProfile);
+            return mapper.writeValueAsString(object);
         } catch (Exception e) {
-            log.error("Error loading user profile.");
+            log.error("Error jsoning object.");
             log.error(e);
         }
         return "{}";

@@ -5,15 +5,11 @@ import com.ddumanskiy.arduino.server.GroupHolder;
 import com.ddumanskiy.arduino.user.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
+import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 
-import java.util.Iterator;
-
-import static com.ddumanskiy.arduino.common.Consts.OK_RESPONSE;
+import static com.ddumanskiy.arduino.response.ResponseCode.DEVICE_NOT_IN_NETWORK;
+import static com.ddumanskiy.arduino.response.ResponseCode.OK;
 
 /**
  * User: DOOM
@@ -26,7 +22,7 @@ public class WorkerChannelHandler extends SimpleChannelHandler {
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
-        Channel incomeChannel = e.getChannel();
+        final Channel incomeChannel = e.getChannel();
         String message = (String) e.getMessage();
 
         //this means not authentificated attempt
@@ -38,17 +34,26 @@ public class WorkerChannelHandler extends SimpleChannelHandler {
         }
 
         DefaultChannelGroup group = GroupHolder.getPrivateRooms().get(authUser);
-        Iterator<Channel> iterator = group.iterator();
-        while (iterator.hasNext()) {
-            Channel current = iterator.next();
+
+        if (group.size() == 1) {
+            incomeChannel.write(DEVICE_NOT_IN_NETWORK);
+            return;
+        }
+
+        for (Channel current : group) {
             //sending message for all except those one that sends
             if (!current.getId().equals(incomeChannel.getId())) {
                 log.info("Found channel to send message to " + current.getId() + ", message: " + message);
-                current.write(message);
+                //todo here may be a lot of channels... so how to send response back to user?
+                ChannelFuture future = current.write(message);
+
+                future.addListener(new ChannelFutureListener() {
+                    public void operationComplete(ChannelFuture future) {
+                        incomeChannel.write(OK);
+                    }
+                });
             }
         }
-
-        incomeChannel.write(OK_RESPONSE);
     }
 
 }

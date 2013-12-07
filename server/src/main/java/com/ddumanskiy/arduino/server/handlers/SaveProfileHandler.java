@@ -10,8 +10,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.*;
 
-import static com.ddumanskiy.arduino.common.Consts.BAD_RESPONSE;
-import static com.ddumanskiy.arduino.common.Consts.OK_RESPONSE;
+import static com.ddumanskiy.arduino.response.ResponseCode.INVALID_COMMAND_FORMAT;
+import static com.ddumanskiy.arduino.response.ResponseCode.OK;
 
 /**
  * User: ddumanskiy
@@ -39,7 +39,7 @@ public class SaveProfileHandler extends SimpleChannelHandler {
         //expecting message with 2 parts
         if (messageParts.length != 2) {
             log.error("Register Handler. Wrong income message format.");
-            incomeChannel.write(BAD_RESPONSE);
+            incomeChannel.write(INVALID_COMMAND_FORMAT);
             return;
         }
 
@@ -49,7 +49,7 @@ public class SaveProfileHandler extends SimpleChannelHandler {
         UserProfile userProfile = JsonParser.parse(userProfileString);
         if (userProfile == null) {
             log.error("Register Handler. Wrong user profile message format.");
-            incomeChannel.write(BAD_RESPONSE);
+            incomeChannel.write(INVALID_COMMAND_FORMAT);
             return;
         }
 
@@ -65,7 +65,7 @@ public class SaveProfileHandler extends SimpleChannelHandler {
         authUser.setUserProfile(userProfile);
         UserRegistry.save();
 
-        incomeChannel.write(OK_RESPONSE);
+        incomeChannel.write(OK);
     }
 
     private boolean isSaveProfileAction(String actionName) {

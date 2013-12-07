@@ -1,6 +1,8 @@
 package com.ddumanskiy.arduino.client;
 
 import com.ddumanskiy.arduino.common.Utils;
+import com.ddumanskiy.arduino.common.decoders.MessageIdDecoder;
+import com.ddumanskiy.arduino.common.encoders.MessageIdEncoder;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
@@ -56,11 +58,13 @@ public class Client {
                 return Channels.pipeline(
                         //downstream
                         new LengthFieldPrepender(2),
+                        new MessageIdEncoder(2),
                         new StringEncoder(),
 
 
                         //upstream
                         new LengthFieldBasedFrameDecoder(Short.MAX_VALUE, 0, 2, 0, 2),
+                        new MessageIdDecoder(2),
                         new ServerResponsePrinter()
                 );
             }
