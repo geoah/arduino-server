@@ -3,26 +3,43 @@
 
 ## Clients protocol
 
-For simplicity Length Field approach used. Base idea : every message consists of 2 parts. 
-Message length (2 bytes int) and message itself. For instance, the value of the length field in 
-this example is 12 (0x000C) which represents the length of "HELLO, WORLD".
+For simplicity Length Field approach used. Base idea : every message consists of 3 parts. 
+Message length (2 bytes int), message id (2 bytes int) and message itself. For instance, the value of the length field in this example is 14 (0x000E) which represents the length of "HELLO, WORLD" (12 bytes) and messageID field length (2 bytes).
 
-	 BEFORE DECODE (14 bytes)		 AFTER DECODE (12 bytes)
-	+--------+----------------+		 +----------------+
-	| Length | Actual Content |----->| Actual Content |
-	| 0x000C | "HELLO, WORLD" |		 | "HELLO, WORLD" |
-	+--------+----------------+		 +----------------+
+	         BEFORE DECODE (16 bytes)              AFTER DECODE (12 bytes)
+	+--------+-----------+----------------+         +----------------+
+	| Length | MessageID | Actual Content |----->   | Actual Content |
+	| 0x000E |   0x0001  | "HELLO, WORLD" |         | "HELLO, WORLD" |
+	+--------+-----------+----------------+         +----------------+
 
-So message is always "2 bytes + messageBody.length"; Max message length is (2^15)-1.
+So message is always "2 bytes + 2 bytes + messageBody.length"; Max message length is (2^15)-1.
 
-## COMMANDS
-	register (usage "register pupkin@mail.ru pupkin")
-	login (usage "login pupkin@mail.ru pupkin")
-	saveProfile (usage "saveProfile {...}")
+## Mobile Client COMMANDS
+	register ("register pupkin@mail.ru pupkin")
+	login ("login pupkin@mail.ru pupkin")
+	saveProfile ("saveProfile {...}")
 	loadProfile
+	digitalWrite ("digitalWrite 13 0" - arduino digitalWrite(13, LOW))
+	analogWrite ("analogWrite 9 0" - arduino analogWrite(9, 0))
+	digitalRead ("digitalRead 13" - arduino digitalRead(13))
+	analogRead ("analogRead 3" - arduino analogRead(3))
+
+## Response Codes
+Every command will return json object. It will be either requested info (like loadProfile) either response code message in case of error or in case of command that doesn't return anything (like saveProfile):
+
+	{"responseCode":1}
+
+    1 - message was successfully processed/passed to arduino board
+    
+    2 - command is bad formed, check syntax and passed params
+    3 - user not registered
+    4 - user with such name already registered
+    5 - user havn't made login command
+    6 - user not allowed to perfrom this operation (most probably not logged or socket was closed)
+    7 - arduino board not in network
 
 ## User Profile JSON structure
-	UserProfile : { "dashBoards" : 
+	{ "dashBoards" : 
 		[ 
 			{
 			 "id":1, "name":"My Dashboard", "isActive":true, 
