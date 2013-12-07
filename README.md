@@ -25,6 +25,10 @@ So message is always "2 bytes + 2 bytes + messageBody.length"; Max message lengt
 	analogRead ("analogRead 3" - arduino analogRead(3))
 
 ## Response Codes
+Every command will return json object. It will be either requested info (like loadProfile) either response code message in case of error or in case of command that doesn't return anything (like saveProfile):
+
+	{"responseCode":1}
+
     1 - message was successfully processed/passed to arduino board
     
     2 - command is bad formed, check syntax and passed params
