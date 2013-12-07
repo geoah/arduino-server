@@ -3,6 +3,7 @@ package com.ddumanskiy.arduino.server.handlers;
 
 import com.ddumanskiy.arduino.auth.Session;
 import com.ddumanskiy.arduino.auth.UserRegistry;
+import com.ddumanskiy.arduino.common.message.Message;
 import com.ddumanskiy.arduino.model.UserProfile;
 import com.ddumanskiy.arduino.user.User;
 import com.ddumanskiy.arduino.utils.JsonParser;
@@ -10,8 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.*;
 
-import static com.ddumanskiy.arduino.response.ResponseCode.INVALID_COMMAND_FORMAT;
-import static com.ddumanskiy.arduino.response.ResponseCode.OK;
+import static com.ddumanskiy.arduino.response.ResponseCode.*;
 
 /**
  * User: ddumanskiy
@@ -27,9 +27,9 @@ public class SaveProfileHandler extends SimpleChannelHandler {
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
         Channel incomeChannel = e.getChannel();
-        String message = (String) e.getMessage();
+        Message message = (Message) e.getMessage();
 
-        String[] messageParts = message.split(" ");
+        String[] messageParts = message.getBody().split(" ");
 
         if (!isSaveProfileAction(messageParts[0])) {
             ctx.sendUpstream(e);
@@ -39,7 +39,8 @@ public class SaveProfileHandler extends SimpleChannelHandler {
         //expecting message with 2 parts
         if (messageParts.length != 2) {
             log.error("Register Handler. Wrong income message format.");
-            incomeChannel.write(INVALID_COMMAND_FORMAT);
+            message.setBody(INVALID_COMMAND_FORMAT);
+            incomeChannel.write(message);
             return;
         }
 
@@ -49,7 +50,8 @@ public class SaveProfileHandler extends SimpleChannelHandler {
         UserProfile userProfile = JsonParser.parse(userProfileString);
         if (userProfile == null) {
             log.error("Register Handler. Wrong user profile message format.");
-            incomeChannel.write(INVALID_COMMAND_FORMAT);
+            message.setBody(INVALID_COMMAND_FORMAT);
+            incomeChannel.write(message);
             return;
         }
 
@@ -58,14 +60,16 @@ public class SaveProfileHandler extends SimpleChannelHandler {
         User authUser = Session.getChannelToken().get(incomeChannel.getId());
         if (authUser == null) {
             log.error("Channel not authorized. Send login first. Closing socket.");
-            incomeChannel.close();
+            message.setBody(USER_NOT_AUTHENTICATED);
+            incomeChannel.write(message);
             return;
         }
 
         authUser.setUserProfile(userProfile);
         UserRegistry.save();
 
-        incomeChannel.write(OK);
+        message.setBody(OK);
+        incomeChannel.write(message);
     }
 
     private boolean isSaveProfileAction(String actionName) {
@@ -74,7 +78,7 @@ public class SaveProfileHandler extends SimpleChannelHandler {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
-       log.error("Error in {}", this.getClass().getName());
+        log.error("Error in {}", this.getClass().getName());
         log.error(e.getCause());
 
         Channel ch = e.getChannel();

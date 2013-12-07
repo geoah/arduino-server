@@ -3,6 +3,7 @@ package com.ddumanskiy.arduino.server.handlers;
 
 import com.ddumanskiy.arduino.auth.EMailValidator;
 import com.ddumanskiy.arduino.auth.UserRegistry;
+import com.ddumanskiy.arduino.common.message.Message;
 import com.ddumanskiy.arduino.mail.MailTLS;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,9 +34,9 @@ public class RegisterChannelHandler extends SimpleChannelHandler {
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
         Channel incomeChannel = e.getChannel();
-        String message = (String) e.getMessage();
+        Message message = (Message) e.getMessage();
 
-        String[] messageParts = message.split(" ");
+        String[] messageParts = message.getBody().split(" ");
 
         //if this is register message (register pupkin@mail.ru hashed_pass)
         if (!isRegisterAction(messageParts[0])) {
@@ -46,7 +47,8 @@ public class RegisterChannelHandler extends SimpleChannelHandler {
         //expecting message with 3 parts, described above in comment.
         if (messageParts.length != 3) {
             log.error("Register Handler. Wrong income message format.");
-            incomeChannel.write(INVALID_COMMAND_FORMAT);
+            message.setBody(INVALID_COMMAND_FORMAT);
+            incomeChannel.write(message);
             return;
         }
 
@@ -57,13 +59,15 @@ public class RegisterChannelHandler extends SimpleChannelHandler {
 
         if (!EMailValidator.isValid(user)) {
             log.error("Register Handler. Wrong email: {}", user);
-            incomeChannel.write(INVALID_COMMAND_FORMAT);
+            message.setBody(INVALID_COMMAND_FORMAT);
+            incomeChannel.write(message);
             return;
         }
 
         if (UserRegistry.isUserExists(user)) {
             log.error("User with name {} already exists.", user);
-            incomeChannel.write(USER_ALREADY_REGISTERED);
+            message.setBody(USER_ALREADY_REGISTERED);
+            incomeChannel.write(message);
             return;
         }
 
@@ -73,7 +77,9 @@ public class RegisterChannelHandler extends SimpleChannelHandler {
 
         UserRegistry.createNewUser(user, pass, id);
         MailTLS.sendMail(user, "You just registered to Arduino control.", id);
-        incomeChannel.write(OK);
+
+        message.setBody(OK);
+        incomeChannel.write(message);
     }
 
     private boolean isRegisterAction(String actionName) {
@@ -83,7 +89,7 @@ public class RegisterChannelHandler extends SimpleChannelHandler {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
         log.error("Error in {}", this.getClass().getName());
-        log.error(e.getCause().fillInStackTrace());
+        log.error(e.getCause());
 
         Channel ch = e.getChannel();
         ch.close();

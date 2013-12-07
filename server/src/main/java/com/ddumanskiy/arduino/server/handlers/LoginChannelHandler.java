@@ -3,6 +3,7 @@ package com.ddumanskiy.arduino.server.handlers;
 
 import com.ddumanskiy.arduino.auth.Session;
 import com.ddumanskiy.arduino.auth.UserRegistry;
+import com.ddumanskiy.arduino.common.message.Message;
 import com.ddumanskiy.arduino.server.GroupHolder;
 import com.ddumanskiy.arduino.user.User;
 import org.apache.logging.log4j.LogManager;
@@ -32,9 +33,9 @@ public class LoginChannelHandler extends SimpleChannelHandler {
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
         Channel incomeChannel = e.getChannel();
-        String message = (String) e.getMessage();
+        Message message = (Message) e.getMessage();
 
-        String[] messageParts = message.split(" ");
+        String[] messageParts = message.getBody().split(" ");
 
         if (!isLoginToken(messageParts[0])) {
             ctx.sendUpstream(e);
@@ -43,7 +44,8 @@ public class LoginChannelHandler extends SimpleChannelHandler {
 
         if (messageParts.length != 3) {
             log.error("Wrong income message format.");
-            incomeChannel.write(INVALID_COMMAND_FORMAT);
+            message.setBody(INVALID_COMMAND_FORMAT);
+            incomeChannel.write(message);
             return;
         }
 
@@ -55,7 +57,8 @@ public class LoginChannelHandler extends SimpleChannelHandler {
 
         if (!UserRegistry.isUserExists(userName)) {
             log.error("User {} not registered.", userName);
-            incomeChannel.write(USER_NOT_REGISTERED);
+            message.setBody(USER_NOT_REGISTERED);
+            incomeChannel.write(message);
             return;
         }
 
@@ -66,14 +69,16 @@ public class LoginChannelHandler extends SimpleChannelHandler {
 
         if (brutterDefence.get(key) != null && brutterDefence.get(key) > 5) {
             log.error("Too many tries for login from 1 host. Blocking until server restart.");
-            incomeChannel.write(NOT_ALLOWED);
+            message.setBody(NOT_ALLOWED);
+            incomeChannel.write(message);
             return;
         }
 
         //todo fix pass validation
         if (!user.getPass().equals(pass)) {
             log.error("Bad password. Please try again.");
-            incomeChannel.write(USER_NOT_AUTHENTICATED);
+            message.setBody(USER_NOT_AUTHENTICATED);
+            incomeChannel.write(message);
 
             Integer tries = brutterDefence.get(key);
             brutterDefence.put(key, tries == null ? 1 : ++tries);
@@ -97,7 +102,8 @@ public class LoginChannelHandler extends SimpleChannelHandler {
             log.info("Adding channel with id {} to userGroup {}.", incomeChannel.getId(), user.getName());
         }
 
-        incomeChannel.write(OK);
+        message.setBody(OK);
+        incomeChannel.write(message);
     }
 
     private boolean isLoginToken(String actionName) {

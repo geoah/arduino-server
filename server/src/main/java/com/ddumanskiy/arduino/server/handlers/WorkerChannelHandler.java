@@ -1,6 +1,7 @@
 package com.ddumanskiy.arduino.server.handlers;
 
 import com.ddumanskiy.arduino.auth.Session;
+import com.ddumanskiy.arduino.common.message.Message;
 import com.ddumanskiy.arduino.server.GroupHolder;
 import com.ddumanskiy.arduino.user.User;
 import org.apache.logging.log4j.LogManager;
@@ -8,8 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 
-import static com.ddumanskiy.arduino.response.ResponseCode.DEVICE_NOT_IN_NETWORK;
-import static com.ddumanskiy.arduino.response.ResponseCode.OK;
+import static com.ddumanskiy.arduino.response.ResponseCode.*;
 
 /**
  * User: DOOM
@@ -23,20 +23,22 @@ public class WorkerChannelHandler extends SimpleChannelHandler {
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
         final Channel incomeChannel = e.getChannel();
-        String message = (String) e.getMessage();
+        final Message message = (Message) e.getMessage();
 
         //this means not authentificated attempt
         User authUser = Session.getChannelToken().get(incomeChannel.getId());
         if (authUser == null) {
             log.error("Channel not authorized. Send login first. Closing socket.");
-            incomeChannel.close();
+            message.setBody(USER_NOT_AUTHENTICATED);
+            incomeChannel.write(message);
             return;
         }
 
         DefaultChannelGroup group = GroupHolder.getPrivateRooms().get(authUser);
 
         if (group.size() == 1) {
-            incomeChannel.write(DEVICE_NOT_IN_NETWORK);
+            message.setBody(DEVICE_NOT_IN_NETWORK);
+            incomeChannel.write(message);
             return;
         }
 
@@ -49,7 +51,9 @@ public class WorkerChannelHandler extends SimpleChannelHandler {
 
                 future.addListener(new ChannelFutureListener() {
                     public void operationComplete(ChannelFuture future) {
-                        incomeChannel.write(OK);
+                        //todo new message
+                        message.setBody(OK);
+                        incomeChannel.write(message);
                     }
                 });
             }

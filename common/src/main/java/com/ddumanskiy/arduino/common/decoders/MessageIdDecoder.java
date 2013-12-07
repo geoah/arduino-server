@@ -1,5 +1,6 @@
 package com.ddumanskiy.arduino.common.decoders;
 
+import com.ddumanskiy.arduino.common.message.Message;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -33,15 +34,9 @@ public class MessageIdDecoder extends FrameDecoder {
     }
 
     @Override
-    protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer) throws Exception {
-        ChannelBuffer messageId = buffer.copy(0, messageIdFieldLength);
-        ctx.setAttachment(messageId);
-        //todo here depending on messageID field length should be defferent method invocation
-        //log.info("Message id : {}", messageId.getShort(0));
-
-        int actualFrameLength = buffer.readableBytes() - messageIdFieldLength;
-        ChannelBuffer messageBody = buffer.copy(messageIdFieldLength, actualFrameLength);
-        buffer.readerIndex(buffer.readableBytes());
-        return messageBody;
+    protected Message decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer) throws Exception {
+        Message message = new Message(buffer);
+        log.info("Getting : {}", message);
+        return message;
     }
 }

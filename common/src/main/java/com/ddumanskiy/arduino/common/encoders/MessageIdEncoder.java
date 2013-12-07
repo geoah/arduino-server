@@ -1,11 +1,15 @@
 package com.ddumanskiy.arduino.common.encoders;
 
+import com.ddumanskiy.arduino.common.message.Message;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
-import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
+import java.nio.charset.Charset;
 
 /**
  * User: ddumanskiy
@@ -14,7 +18,11 @@ import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
  */
 public class MessageIdEncoder extends OneToOneEncoder {
 
+    private static final Logger log = LogManager.getLogger(MessageIdEncoder.class);
+
     private int messageIdLength;
+
+    private static final Charset defaultCharset = Charset.defaultCharset();
 
     public MessageIdEncoder(int messageIdLength) {
         super();
@@ -23,33 +31,18 @@ public class MessageIdEncoder extends OneToOneEncoder {
 
     @Override
     protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
-        if (!(msg instanceof ChannelBuffer)) {
+        if (!(msg instanceof Message)) {
             return msg;
         }
 
-        ChannelBuffer body = (ChannelBuffer) msg;
-        ChannelBuffer header = channel.getConfig().getBufferFactory().getBuffer(body.order(), messageIdLength);
+        log.info("Sending : {}", msg);
 
-        int messageid = 1;
-        switch (messageIdLength) {
-            case 1:
-                header.writeByte((byte) messageid);
-                break;
-            case 2:
-                header.writeShort((short) messageid);
-                break;
-            case 3:
-                header.writeMedium(messageid);
-                break;
-            case 4:
-                header.writeInt(messageid);
-                break;
-            case 8:
-                header.writeLong(messageid);
-                break;
-            default:
-                throw new Error("should not reach here");
-        }
-        return wrappedBuffer(header, body);
+        ChannelBuffer messageIdBuffer = ChannelBuffers.buffer(messageIdLength);
+        messageIdBuffer.writeShort(((Message) msg).getMessageId());
+
+        return ChannelBuffers.wrappedBuffer(
+                messageIdBuffer,
+                ChannelBuffers.copiedBuffer(((Message) msg).getBody(), defaultCharset)
+        );
     }
 }
