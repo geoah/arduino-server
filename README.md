@@ -19,20 +19,21 @@ So message is always "2 bytes + 2 bytes + 1 byte + messageBody.length"; Max mess
 ## Client COMMANDS codes
 So every message is "Length field + MessageId field + Command field + Content field".
 
+        1 - register; Must have 2 space-separated params as content string : "a@a.ua a"
+        2 - login;    Must have 2 space-separated params as content string : "a@a.ua a"
+        3 - save profile; Must have 1 param as content string : "{...}"
+        4 - load profile; Don't have any params
 
-	register ("register a@a.ua a")
-	login ("login a@a.ua a")
-	saveProfile ("saveProfile {...}")
-	loadProfile
-	digitalWrite ("digitalWrite 13 0" - arduino digitalWrite(13, LOW))
-	analogWrite ("analogWrite 9 0" - arduino analogWrite(9, 0))
-	digitalRead ("digitalRead 13" - arduino digitalRead(13))
-	analogRead ("analogRead 3" - arduino analogRead(3))
+        10 - digital write; Must have 2 space-separated params as content string : "13 0" (Arduino digitalWrite(13, LOW)))
+        11 - digital read; Must have 1 param as content string : "13"
+
+        20 - analog write; Must have 2 space-separated params as content string : "9 0" (Arduino analogWrite(9, 0)))
+        21 - analog read; Must have 1 param as content string : "9"
 
 ## Response Codes
 Every command will return json object. It will be either requested info (like loadProfile) either response code message in case of error or in case of command that doesn't return anything (like saveProfile):
-
-	{"responseCode":1}
+Response object -
+	{"code":1}
 
     1 - message was successfully processed/passed to arduino board
     
@@ -42,6 +43,7 @@ Every command will return json object. It will be either requested info (like lo
     5 - user havn't made login command
     6 - user not allowed to perfrom this operation (most probably not logged or socket was closed)
     7 - arduino board not in network
+    8 - command not supported
 
 ## User Profile JSON structure
 	{ "dashBoards" : 

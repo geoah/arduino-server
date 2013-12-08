@@ -1,9 +1,12 @@
 package com.ddumanskiy.arduino.client;
 
+import com.ddumanskiy.arduino.common.Command;
 import com.ddumanskiy.arduino.common.Utils;
-import com.ddumanskiy.arduino.common.decoders.MessageId2BytesDecoder;
-import com.ddumanskiy.arduino.common.encoders.MessageId2BytesEncoder;
+import com.ddumanskiy.arduino.common.decoders.MessageIdAndCommand3BytesDecoder;
+import com.ddumanskiy.arduino.common.encoders.MessageIdAndCommand3BytesEncoder;
 import com.ddumanskiy.arduino.common.message.Message;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
@@ -22,6 +25,8 @@ import java.util.concurrent.Executors;
  * Time: 8:09 PM
  */
 public class Client {
+
+    private static final Logger log = LogManager.getLogger(Client.class);
 
     private int port;
     private String host;
@@ -59,11 +64,11 @@ public class Client {
                 return Channels.pipeline(
                         //downstream
                         new LengthFieldPrepender(2),
-                        new MessageId2BytesEncoder(),
+                        new MessageIdAndCommand3BytesEncoder(),
 
                         //upstream
                         new LengthFieldBasedFrameDecoder(Short.MAX_VALUE, 0, 2, 0, 2),
-                        new MessageId2BytesDecoder(),
+                        new MessageIdAndCommand3BytesDecoder(),
                         new ServerResponsePrinter()
                 );
             }
@@ -92,8 +97,48 @@ public class Client {
 
         String line;
         while ((line = consoleInput.readLine()) != null) {
-            serverChannel.write(new Message((short)random.nextInt(Short.MAX_VALUE), line));
+            String[] input = line.split(" ", 2);
+
+            byte command;
+
+            try {
+                command = getCommand(input[0]);
+            } catch (IllegalArgumentException e) {
+                log.error(e);
+                continue;
+            }
+
+            serverChannel.write(new Message((short)random.nextInt(Short.MAX_VALUE), command, input[1]));
         }
+    }
+
+    private static byte getCommand(String commandWord) {
+        if ("register".equalsIgnoreCase(commandWord)) {
+            return Command.REGISTER;
+        }
+        if ("login".equalsIgnoreCase(commandWord)) {
+            return Command.LOGIN;
+        }
+        if ("loadProfile".equalsIgnoreCase(commandWord)) {
+            return Command.LOAD_PROFILE;
+        }
+        if ("saveProfile".equalsIgnoreCase(commandWord)) {
+            return Command.SAVE_PROFILE;
+        }
+        if ("digitalWrite".equalsIgnoreCase(commandWord)) {
+            return Command.DIGITAL_WRITE;
+        }
+        if ("digitalRead".equalsIgnoreCase(commandWord)) {
+            return Command.DIGITAL_READ;
+        }
+        if ("analogWrite".equalsIgnoreCase(commandWord)) {
+            return Command.ANALOG_WRITE;
+        }
+        if ("analogRead".equalsIgnoreCase(commandWord)) {
+            return Command.ANALOG_READ;
+        }
+
+        throw new IllegalArgumentException("Wrong command " + commandWord);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.ddumanskiy.arduino.server.handlers;
 
 import com.ddumanskiy.arduino.auth.Session;
+import com.ddumanskiy.arduino.common.Command;
 import com.ddumanskiy.arduino.common.message.Message;
 import com.ddumanskiy.arduino.server.GroupHolder;
 import com.ddumanskiy.arduino.user.User;
@@ -16,26 +17,29 @@ import static com.ddumanskiy.arduino.response.ResponseCode.*;
  * Date: 8/11/13
  * Time: 3:38 PM
  */
-public class ArduinoCommandsHandler extends SimpleChannelHandler {
+public class ArduinoCommandsHandler extends BaseSimpleChannelHandler {
 
     private static final Logger log = LogManager.getLogger(ArduinoCommandsHandler.class);
 
-    private static final String[] ALLOWED_COMMANDS = new String[] {
-            "digitalWrite",
-            "digitalRead",
-            "analogWrite",
-            "analogRead"
+    private static final byte[] ALLOWED_COMMANDS = new byte[] {
+            Command.DIGITAL_WRITE,
+            Command.DIGITAL_READ,
+            Command.ANALOG_READ,
+            Command.ANALOG_WRITE
     };
+
+    @Override
+    protected byte[] getHandlerCommands() {
+        return ALLOWED_COMMANDS;
+    }
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
         final Channel incomeChannel = e.getChannel();
         final Message message = (Message) e.getMessage();
 
-        String[] messageParts = message.getBody().split(" ");
-
-        if (!isArduinoCommand(messageParts[0])) {
-            log.error("Command not supported - {}.", messageParts[0]);
+        if (!isHandlerCommand(message.getCommand())) {
+            log.error("Command not supported - {}.", message.getCommand());
             message.setBody(NOT_SUPPORTED_COMMAND);
             incomeChannel.write(message);
             return;
@@ -74,15 +78,6 @@ public class ArduinoCommandsHandler extends SimpleChannelHandler {
                 });
             }
         }
-    }
-
-    private static boolean isArduinoCommand(String commandString) {
-        for (String allowedCommand : ALLOWED_COMMANDS) {
-            if (commandString.startsWith(allowedCommand)) {
-                return true;
-            }
-        }
-        return false;
     }
 
 }

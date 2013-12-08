@@ -19,18 +19,18 @@ public class ResponseCode {
     public static final String DEVICE_NOT_IN_NETWORK = new ResponseCode(7).toString();
     public static final String NOT_SUPPORTED_COMMAND = new ResponseCode(8).toString();
 
-    private int responseCode;
+    private int code;
 
     private ResponseCode(int responseCode) {
-        this.responseCode = responseCode;
+        this.code = responseCode;
     }
 
-    public int getResponseCode() {
-        return responseCode;
+    public int getCode() {
+        return code;
     }
 
-    public void setResponseCode(int responseCode) {
-        this.responseCode = responseCode;
+    public void setCode(int code) {
+        this.code = code;
     }
 
     @Override

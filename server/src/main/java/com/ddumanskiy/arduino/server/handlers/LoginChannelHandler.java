@@ -3,12 +3,16 @@ package com.ddumanskiy.arduino.server.handlers;
 
 import com.ddumanskiy.arduino.auth.Session;
 import com.ddumanskiy.arduino.auth.UserRegistry;
+import com.ddumanskiy.arduino.common.Command;
 import com.ddumanskiy.arduino.common.message.Message;
 import com.ddumanskiy.arduino.server.GroupHolder;
 import com.ddumanskiy.arduino.user.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jboss.netty.channel.*;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ExceptionEvent;
+import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 
 import java.net.InetSocketAddress;
@@ -22,27 +26,34 @@ import static com.ddumanskiy.arduino.response.ResponseCode.*;
  * Date: 6/15/13
  * Time: 5:41 PM
  */
-public class LoginChannelHandler extends SimpleChannelHandler {
+public class LoginChannelHandler extends BaseSimpleChannelHandler {
 
     private static final Logger log = LogManager.getLogger(LoginChannelHandler.class);
 
-    private final Map<String, Integer> brutterDefence = new HashMap<String, Integer>();
+    private final Map<String, Integer> brutterDefence = new HashMap<>();
 
-    private static final String LOGIN_TOKEN = "login";
+    private static final byte[] ALLOWED_COMMANDS = new byte[] {
+            Command.LOGIN,
+    };
+
+    @Override
+    protected byte[] getHandlerCommands() {
+        return ALLOWED_COMMANDS;
+    }
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
         Channel incomeChannel = e.getChannel();
         Message message = (Message) e.getMessage();
 
-        String[] messageParts = message.getBody().split(" ");
+        String[] messageParts = message.getBody().split(" ", 2);
 
-        if (!isLoginToken(messageParts[0])) {
+        if (!isHandlerCommand(message.getCommand())) {
             ctx.sendUpstream(e);
             return;
         }
 
-        if (messageParts.length != 3) {
+        if (messageParts.length != 2) {
             log.error("Wrong income message format.");
             message.setBody(INVALID_COMMAND_FORMAT);
             incomeChannel.write(message);
@@ -50,9 +61,9 @@ public class LoginChannelHandler extends SimpleChannelHandler {
         }
 
 
-        String userName = messageParts[1].toLowerCase();
+        String userName = messageParts[0].toLowerCase();
         //TODO encryption, SSL sockets.
-        String pass = messageParts[2];
+        String pass = messageParts[1];
         log.info("User : {}", userName);
 
         if (!UserRegistry.isUserExists(userName)) {
@@ -104,10 +115,6 @@ public class LoginChannelHandler extends SimpleChannelHandler {
 
         message.setBody(OK);
         incomeChannel.write(message);
-    }
-
-    private boolean isLoginToken(String actionName) {
-        return LOGIN_TOKEN.equalsIgnoreCase(actionName);
     }
 
     @Override

@@ -3,13 +3,17 @@ package com.ddumanskiy.arduino.server.handlers;
 
 import com.ddumanskiy.arduino.auth.Session;
 import com.ddumanskiy.arduino.auth.UserRegistry;
+import com.ddumanskiy.arduino.common.Command;
 import com.ddumanskiy.arduino.common.message.Message;
 import com.ddumanskiy.arduino.model.UserProfile;
 import com.ddumanskiy.arduino.user.User;
 import com.ddumanskiy.arduino.utils.JsonParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jboss.netty.channel.*;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ExceptionEvent;
+import org.jboss.netty.channel.MessageEvent;
 
 import static com.ddumanskiy.arduino.response.ResponseCode.*;
 
@@ -18,33 +22,39 @@ import static com.ddumanskiy.arduino.response.ResponseCode.*;
  * Date: 11/6/13
  * Time: 8:29 PM
  */
-public class SaveProfileHandler extends SimpleChannelHandler {
+public class SaveProfileHandler extends BaseSimpleChannelHandler {
 
     private static final Logger log = LogManager.getLogger(SaveProfileHandler.class);
 
-    private static final String SAVE_PROFILE_TOKEN = "saveProfile";
+    private static final byte[] ALLOWED_COMMANDS = new byte[] {
+            Command.SAVE_PROFILE,
+    };
+
+    @Override
+    protected byte[] getHandlerCommands() {
+        return ALLOWED_COMMANDS;
+    }
+
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
         Channel incomeChannel = e.getChannel();
         Message message = (Message) e.getMessage();
 
-        String[] messageParts = message.getBody().split(" ");
-
-        if (!isSaveProfileAction(messageParts[0])) {
+        if (!isHandlerCommand(message.getCommand())) {
             ctx.sendUpstream(e);
             return;
         }
 
+        String userProfileString = message.getBody();
+
         //expecting message with 2 parts
-        if (messageParts.length != 2) {
-            log.error("Register Handler. Wrong income message format.");
+        if (userProfileString == null || userProfileString.equals("")) {
+            log.error("Save Profile Handler. Income profile message is empty.");
             message.setBody(INVALID_COMMAND_FORMAT);
             incomeChannel.write(message);
             return;
         }
-
-        String userProfileString = messageParts[1];
 
         log.info("Trying to parse user profile : {}", userProfileString);
         UserProfile userProfile = JsonParser.parse(userProfileString);
@@ -70,10 +80,6 @@ public class SaveProfileHandler extends SimpleChannelHandler {
 
         message.setBody(OK);
         incomeChannel.write(message);
-    }
-
-    private boolean isSaveProfileAction(String actionName) {
-        return SAVE_PROFILE_TOKEN.equalsIgnoreCase(actionName);
     }
 
     @Override

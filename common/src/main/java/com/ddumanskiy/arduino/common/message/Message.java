@@ -9,13 +9,16 @@ public class Message {
 
     private short messageId;
 
+    private byte command;
+
     private String body;
 
     public Message() {
     }
 
-    public Message(short messageId, String body) {
+    public Message(short messageId, byte command, String body) {
         this.messageId = messageId;
+        this.command = command;
         this.body = body;
     }
 
@@ -25,6 +28,14 @@ public class Message {
 
     public void setMessageId(short messageId) {
         this.messageId = messageId;
+    }
+
+    public byte getCommand() {
+        return command;
+    }
+
+    public void setCommand(byte command) {
+        this.command = command;
     }
 
     public String getBody() {
@@ -39,6 +50,7 @@ public class Message {
     public String toString() {
         return "Message{" +
                 "messageId=" + messageId +
+                ", command=" + command +
                 ", body='" + body + '\'' +
                 '}';
     }

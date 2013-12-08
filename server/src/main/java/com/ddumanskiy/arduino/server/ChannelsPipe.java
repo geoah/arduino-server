@@ -1,7 +1,7 @@
 package com.ddumanskiy.arduino.server;
 
-import com.ddumanskiy.arduino.common.decoders.MessageId2BytesDecoder;
-import com.ddumanskiy.arduino.common.encoders.MessageId2BytesEncoder;
+import com.ddumanskiy.arduino.common.decoders.MessageIdAndCommand3BytesDecoder;
+import com.ddumanskiy.arduino.common.encoders.MessageIdAndCommand3BytesEncoder;
 import com.ddumanskiy.arduino.server.handlers.*;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -23,11 +23,11 @@ public class ChannelsPipe implements ChannelPipelineFactory {
         return Channels.pipeline(
                 //downstream
                 new LengthFieldPrepender(2),
-                new MessageId2BytesEncoder(),
+                new MessageIdAndCommand3BytesEncoder(),
 
                 //upstream
                 new LengthFieldBasedFrameDecoder(Short.MAX_VALUE, 0, 2, 0, 2),
-                new MessageId2BytesDecoder(),
+                new MessageIdAndCommand3BytesDecoder(),
 
                 new RegisterChannelHandler(),
                 new LoginChannelHandler(),

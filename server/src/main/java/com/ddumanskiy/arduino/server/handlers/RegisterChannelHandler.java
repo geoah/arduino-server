@@ -3,11 +3,15 @@ package com.ddumanskiy.arduino.server.handlers;
 
 import com.ddumanskiy.arduino.auth.EMailValidator;
 import com.ddumanskiy.arduino.auth.UserRegistry;
+import com.ddumanskiy.arduino.common.Command;
 import com.ddumanskiy.arduino.common.message.Message;
 import com.ddumanskiy.arduino.mail.MailTLS;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jboss.netty.channel.*;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ExceptionEvent;
+import org.jboss.netty.channel.MessageEvent;
 
 import java.util.UUID;
 
@@ -25,36 +29,44 @@ import static com.ddumanskiy.arduino.response.ResponseCode.*;
  * Date: 6/15/13
  * Time: 5:41 PM
  */
-public class RegisterChannelHandler extends SimpleChannelHandler {
+public class RegisterChannelHandler extends BaseSimpleChannelHandler {
 
     private static final Logger log = LogManager.getLogger(RegisterChannelHandler.class);
 
-    private static final String REGISTER_TOKEN = "register";
+    private static final byte[] ALLOWED_COMMANDS = new byte[] {
+            Command.REGISTER,
+    };
+
+    @Override
+    protected byte[] getHandlerCommands() {
+        return ALLOWED_COMMANDS;
+    }
+
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
         Channel incomeChannel = e.getChannel();
         Message message = (Message) e.getMessage();
 
-        String[] messageParts = message.getBody().split(" ");
+        String[] messageParts = message.getBody().split(" ", 2);
 
         //if this is register message (register pupkin@mail.ru hashed_pass)
-        if (!isRegisterAction(messageParts[0])) {
+        if (!isHandlerCommand(message.getCommand())) {
             ctx.sendUpstream(e);
             return;
         }
 
         //expecting message with 3 parts, described above in comment.
-        if (messageParts.length != 3) {
+        if (messageParts.length != 2) {
             log.error("Register Handler. Wrong income message format.");
             message.setBody(INVALID_COMMAND_FORMAT);
             incomeChannel.write(message);
             return;
         }
 
-        String user = messageParts[1].toLowerCase();
+        String user = messageParts[0].toLowerCase();
         //TODO encryption, SSL sockets.
-        String pass = messageParts[2];
+        String pass = messageParts[1];
         log.info("Trying register user : {}", user);
 
         if (!EMailValidator.isValid(user)) {
@@ -80,10 +92,6 @@ public class RegisterChannelHandler extends SimpleChannelHandler {
 
         message.setBody(OK);
         incomeChannel.write(message);
-    }
-
-    private boolean isRegisterAction(String actionName) {
-        return REGISTER_TOKEN.equalsIgnoreCase(actionName);
     }
 
     @Override
