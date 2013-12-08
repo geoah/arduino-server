@@ -3,20 +3,25 @@
 
 ## Clients protocol
 
-For simplicity Length Field approach used. Base idea : every message consists of 3 parts. 
-Message length (2 bytes int), message id (2 bytes int) and message itself. For instance, the value of the length field in this example is 14 (0x000E) which represents the length of "HELLO, WORLD" (12 bytes) and messageID field length (2 bytes).
+For simplicity Length Field approach used. Base idea : every message consists of 4 parts. 
+Message length (2 bytes int), message id (2 bytes int), command number (1 byte int) and message itself. For instance, the value of the length field in this example is 15 (0x000F) which represents the length of "HELLO, WORLD" (12 bytes), messageID field length (2 bytes) and command field length (1 byte).
 
-	         BEFORE DECODE (16 bytes)              AFTER DECODE (12 bytes)
-	+--------+-----------+----------------+         +----------------+
-	| Length | MessageID | Actual Content |----->   | Actual Content |
-	| 0x000E |   0x0001  | "HELLO, WORLD" |         | "HELLO, WORLD" |
-	+--------+-----------+----------------+         +----------------+
+	         BEFORE DECODE (17 bytes)                       AFTER DECODE (12 bytes)
+	+--------+-----------+---------+----------------+
+	| 2bytes |  2 bytes  |  1 byte |                |
+	+--------+-----------+---------+----------------+         +----------------+
+	| Length | MessageID | Command + Actual Content |----->   | Actual Content |
+	| 0x000F |   0x0001  |   0x01  + "HELLO, WORLD" |         | "HELLO, WORLD" |
+	+--------+-----------+---------+----------------+         +----------------+
 
-So message is always "2 bytes + 2 bytes + messageBody.length"; Max message length is (2^15)-1.
+So message is always "2 bytes + 2 bytes + 1 byte + messageBody.length"; Max message length is (2^15)-4 bytes.
 
-## Mobile Client COMMANDS
-	register ("register pupkin@mail.ru pupkin")
-	login ("login pupkin@mail.ru pupkin")
+## Client COMMANDS codes
+So every message is "Length field + MessageId field + Command field + Content field".
+
+
+	register ("register a@a.ua a")
+	login ("login a@a.ua a")
 	saveProfile ("saveProfile {...}")
 	loadProfile
 	digitalWrite ("digitalWrite 13 0" - arduino digitalWrite(13, LOW))
