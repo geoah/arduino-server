@@ -1,7 +1,7 @@
 package com.ddumanskiy.arduino.server;
 
 
-import com.ddumanskiy.arduino.user.User;
+import com.ddumanskiy.arduino.auth.User;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 
 import java.util.Map;

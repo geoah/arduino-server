@@ -2,15 +2,14 @@ package com.ddumanskiy.arduino.server.handlers;
 
 
 import com.ddumanskiy.arduino.auth.Session;
+import com.ddumanskiy.arduino.auth.User;
 import com.ddumanskiy.arduino.common.Command;
 import com.ddumanskiy.arduino.common.message.Message;
-import com.ddumanskiy.arduino.response.ResponseCode;
-import com.ddumanskiy.arduino.user.User;
+import com.ddumanskiy.arduino.server.response.ResponseCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 
 /**
@@ -53,12 +52,4 @@ public class LoadProfileHandler extends BaseSimpleChannelHandler {
         incomeChannel.write(message);
     }
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
-        log.error("Error in {}", this.getClass().getName());
-        log.error(e.getCause());
-
-        Channel ch = e.getChannel();
-        ch.close();
-    }
 }

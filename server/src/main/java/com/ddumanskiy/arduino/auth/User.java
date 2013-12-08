@@ -1,4 +1,4 @@
-package com.ddumanskiy.arduino.user;
+package com.ddumanskiy.arduino.auth;
 
 import com.ddumanskiy.arduino.model.UserProfile;
 

@@ -29,8 +29,9 @@ public class ChannelsPipe implements ChannelPipelineFactory {
                 new LengthFieldBasedFrameDecoder(Short.MAX_VALUE, 0, 2, 0, 2),
                 new MessageIdAndCommand3BytesDecoder(),
 
-                new RegisterChannelHandler(),
-                new LoginChannelHandler(),
+                new RegisterHandler(),
+                new PasswordHandler(),
+                new LoginHandler(),
                 new SaveProfileHandler(),
                 new LoadProfileHandler(),
                 new ArduinoCommandsHandler()

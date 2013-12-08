@@ -1,21 +1,20 @@
 package com.ddumanskiy.arduino.server.handlers;
 
 
-import com.ddumanskiy.arduino.auth.EMailValidator;
 import com.ddumanskiy.arduino.auth.UserRegistry;
 import com.ddumanskiy.arduino.common.Command;
 import com.ddumanskiy.arduino.common.message.Message;
+import com.ddumanskiy.arduino.mail.EMailValidator;
 import com.ddumanskiy.arduino.mail.MailTLS;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 
 import java.util.UUID;
 
-import static com.ddumanskiy.arduino.response.ResponseCode.*;
+import static com.ddumanskiy.arduino.server.response.ResponseCode.*;
 
 /**
  * Get input message. Checks if it is a register command.
@@ -29,9 +28,9 @@ import static com.ddumanskiy.arduino.response.ResponseCode.*;
  * Date: 6/15/13
  * Time: 5:41 PM
  */
-public class RegisterChannelHandler extends BaseSimpleChannelHandler {
+public class RegisterHandler extends BaseSimpleChannelHandler {
 
-    private static final Logger log = LogManager.getLogger(RegisterChannelHandler.class);
+    private static final Logger log = LogManager.getLogger(RegisterHandler.class);
 
     private static final byte[] ALLOWED_COMMANDS = new byte[] {
             Command.REGISTER,
@@ -94,12 +93,4 @@ public class RegisterChannelHandler extends BaseSimpleChannelHandler {
         incomeChannel.write(message);
     }
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
-        log.error("Error in {}", this.getClass().getName());
-        log.error(e.getCause());
-
-        Channel ch = e.getChannel();
-        ch.close();
-    }
 }

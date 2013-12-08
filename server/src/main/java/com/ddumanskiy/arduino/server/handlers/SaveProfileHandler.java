@@ -2,20 +2,19 @@ package com.ddumanskiy.arduino.server.handlers;
 
 
 import com.ddumanskiy.arduino.auth.Session;
+import com.ddumanskiy.arduino.auth.User;
 import com.ddumanskiy.arduino.auth.UserRegistry;
 import com.ddumanskiy.arduino.common.Command;
 import com.ddumanskiy.arduino.common.message.Message;
 import com.ddumanskiy.arduino.model.UserProfile;
-import com.ddumanskiy.arduino.user.User;
 import com.ddumanskiy.arduino.utils.JsonParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 
-import static com.ddumanskiy.arduino.response.ResponseCode.*;
+import static com.ddumanskiy.arduino.server.response.ResponseCode.*;
 
 /**
  * User: ddumanskiy
@@ -82,12 +81,4 @@ public class SaveProfileHandler extends BaseSimpleChannelHandler {
         incomeChannel.write(message);
     }
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
-        log.error("Error in {}", this.getClass().getName());
-        log.error(e.getCause());
-
-        Channel ch = e.getChannel();
-        ch.close();
-    }
 }

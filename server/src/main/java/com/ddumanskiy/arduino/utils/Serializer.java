@@ -1,6 +1,6 @@
 package com.ddumanskiy.arduino.utils;
 
-import com.ddumanskiy.arduino.user.User;
+import com.ddumanskiy.arduino.auth.User;
 import org.apache.commons.lang.SerializationUtils;
 
 import java.io.FileInputStream;

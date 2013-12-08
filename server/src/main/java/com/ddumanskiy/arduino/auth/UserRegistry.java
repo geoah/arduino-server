@@ -1,6 +1,5 @@
 package com.ddumanskiy.arduino.auth;
 
-import com.ddumanskiy.arduino.user.User;
 import com.ddumanskiy.arduino.utils.Serializer;
 
 import java.util.concurrent.ConcurrentHashMap;

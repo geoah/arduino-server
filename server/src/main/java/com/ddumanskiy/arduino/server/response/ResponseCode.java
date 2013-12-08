@@ -1,4 +1,4 @@
-package com.ddumanskiy.arduino.response;
+package com.ddumanskiy.arduino.server.response;
 
 import com.ddumanskiy.arduino.utils.JsonParser;
 

@@ -1,16 +1,16 @@
 package com.ddumanskiy.arduino.server.handlers;
 
 import com.ddumanskiy.arduino.auth.Session;
+import com.ddumanskiy.arduino.auth.User;
 import com.ddumanskiy.arduino.common.Command;
 import com.ddumanskiy.arduino.common.message.Message;
 import com.ddumanskiy.arduino.server.GroupHolder;
-import com.ddumanskiy.arduino.user.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 
-import static com.ddumanskiy.arduino.response.ResponseCode.*;
+import static com.ddumanskiy.arduino.server.response.ResponseCode.*;
 
 /**
  * User: ddumanskiy

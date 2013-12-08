@@ -1,5 +1,6 @@
 package com.ddumanskiy.arduino.auth;
 
+import com.ddumanskiy.arduino.mail.EMailValidator;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;

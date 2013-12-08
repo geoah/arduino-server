@@ -1,4 +1,4 @@
-package com.ddumanskiy.arduino.auth;
+package com.ddumanskiy.arduino.mail;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -1,7 +1,5 @@
 package com.ddumanskiy.arduino.auth;
 
-import com.ddumanskiy.arduino.user.User;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
