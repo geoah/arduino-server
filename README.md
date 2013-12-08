@@ -16,14 +16,16 @@ Message length (2 bytes int), message id (2 bytes int), command number (1 byte i
 
 So message is always "2 bytes + 2 bytes + 1 byte + messageBody.length"; Max message length is (2^15)-4 bytes.
 
-## Client COMMANDS codes
-So every message is "Length field + MessageId field + Command field + Content field".
+## COMMANDS codes
+Every message is "Length field + MessageId field + Command field + Content field".
 
+#### Mobile client commands
         1 - register; Must have 2 space-separated params as content string : "a@a.ua a"
         2 - login;    Must have 2 space-separated params as content string : "a@a.ua a"
         3 - save profile; Must have 1 param as content string : "{...}"
         4 - load profile; Don't have any params
-
+        
+#### Arduino client commands
         10 - digital write; Must have 2 space-separated params as content string : "13 0" (Arduino digitalWrite(13, LOW)))
         11 - digital read; Must have 1 param as content string : "13"
 
