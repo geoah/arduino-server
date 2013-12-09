@@ -25,7 +25,9 @@ public class ArduinoCommandsHandler extends BaseSimpleChannelHandler {
             Command.DIGITAL_WRITE,
             Command.DIGITAL_READ,
             Command.ANALOG_READ,
-            Command.ANALOG_WRITE
+            Command.ANALOG_WRITE,
+            Command.RESET,
+            Command.RESET_ALL
     };
 
     @Override

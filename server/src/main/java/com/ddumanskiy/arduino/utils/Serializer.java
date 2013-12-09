@@ -27,6 +27,7 @@ public class Serializer {
      * Serializes object to temp dir. In file "user.db".
      * @param object - to be serialized.
      */
+    //todo change this and replace with json serialization
     public static void serialize(ConcurrentHashMap object) {
         try {
             //should be closed within SerializationUtils.
@@ -49,7 +50,7 @@ public class Serializer {
         }
 
         if (map == null) {
-            return new ConcurrentHashMap<String, User>();
+            return new ConcurrentHashMap<>();
         }
 
         return map;

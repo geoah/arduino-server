@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Session {
 
-    private static Map<Integer, User> channelToken = new ConcurrentHashMap<Integer, User>();
+    private static Map<Integer, User> channelToken = new ConcurrentHashMap<>();
 
     public static Map<Integer, User> getChannelToken() {
         return channelToken;

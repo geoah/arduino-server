@@ -137,6 +137,12 @@ public class Client {
         if ("analogRead".equalsIgnoreCase(commandWord)) {
             return Command.ANALOG_READ;
         }
+        if ("reset".equalsIgnoreCase(commandWord)) {
+            return Command.RESET;
+        }
+        if ("resetAll".equalsIgnoreCase(commandWord)) {
+            return Command.RESET_ALL;
+        }
 
         throw new IllegalArgumentException("Wrong command " + commandWord);
     }
