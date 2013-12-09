@@ -75,9 +75,15 @@ public class SaveProfileHandler extends BaseSimpleChannelHandler {
         }
 
         authUser.setUserProfile(userProfile);
-        FileManager.saveUserToFile(authUser);
+        boolean profileSaved = FileManager.overrideUserFile(authUser);
 
-        message.setBody(OK);
+        if (profileSaved) {
+            //todo check timers here
+            message.setBody(OK);
+        } else {
+            message.setBody(SERVER_ERROR);
+        }
+
         incomeChannel.write(message);
     }
 

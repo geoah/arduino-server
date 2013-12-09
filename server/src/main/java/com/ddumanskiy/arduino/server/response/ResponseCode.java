@@ -9,7 +9,7 @@ import com.ddumanskiy.arduino.utils.JsonParser;
  */
 public class ResponseCode {
 
-    public static final String OK = new ResponseCode(1).toString();
+    public static final String OK = new ResponseCode(200).toString();
 
     public static final String INVALID_COMMAND_FORMAT = new ResponseCode(2).toString();
     public static final String USER_NOT_REGISTERED = new ResponseCode(3).toString();
@@ -18,6 +18,7 @@ public class ResponseCode {
     public static final String NOT_ALLOWED = new ResponseCode(6).toString();
     public static final String DEVICE_NOT_IN_NETWORK = new ResponseCode(7).toString();
     public static final String NOT_SUPPORTED_COMMAND = new ResponseCode(8).toString();
+    public static final String SERVER_ERROR = new ResponseCode(500).toString();
 
     private int code;
 
@@ -38,3 +39,4 @@ public class ResponseCode {
         return JsonParser.toJson(this);
     }
 }
+

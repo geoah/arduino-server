@@ -39,23 +39,30 @@ public class FileManagerIntegrationTest {
 
     @Test
     public void testCreationTempFile() throws IOException {
-        assertTrue(FileManager.saveUserToFile(user1));
-        //should fail second time as user already exists.
-        assertFalse(FileManager.saveUserToFile(user1));
+        assertTrue(FileManager.saveNewUserToFile(user1));
+        //file existence ignored
+        assertTrue(FileManager.saveNewUserToFile(user1));
     }
 
     @Test
     public void testReadListOfFiles() {
-        User user1 = new User("name1", "pass1", "id1");
-        User user2 = new User("name2", "pass2", "id2");
-
-        assertTrue(FileManager.saveUserToFile(user1));
-        assertTrue(FileManager.saveUserToFile(user2));
+        assertTrue(FileManager.saveNewUserToFile(user1));
+        assertTrue(FileManager.saveNewUserToFile(user2));
 
         ConcurrentHashMap<String, User> users = FileManager.deserialize();
         assertNotNull(users);
         assertNotNull(users.get(user1.getName()));
         assertNotNull(users.get(user2.getName()));
+    }
+
+    @Test
+    public void testOverrideFiles() {
+        assertTrue(FileManager.overrideUserFile(user1));
+        assertTrue(FileManager.overrideUserFile(user1));
+
+        ConcurrentHashMap<String, User> users = FileManager.deserialize();
+        assertNotNull(users);
+        assertNotNull(users.get(user1.getName()));
     }
 
 }

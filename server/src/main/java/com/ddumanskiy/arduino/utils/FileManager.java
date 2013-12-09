@@ -38,23 +38,29 @@ public final class FileManager {
      * @param user - user to save
      * @return true in case of success
      */
-    public static boolean saveUserToFile(User user) {
-        Path tempFile;
+    public static boolean saveNewUserToFile(User user) {
+        createFile(user.getName());
+
+        return overrideUserFile(user);
+    }
+
+    private static void createFile(String userName) {
         try {
-            Path file = generateFileName(user.getName());
-            tempFile = Files.createFile(file);
+            Path file = generateFileName(userName);
+            Files.createFile(file);
         } catch (FileAlreadyExistsException fae) {
-            log.error("File already exists. Should never happen. User : {}", user);
-            return false;
+            log.error("File already exists. Should never happen. User : {}", userName);
         } catch (IOException ioe) {
             log.error("Error creating temp file.", ioe);
-            return false;
         }
+    }
 
-        try (BufferedWriter writer = Files.newBufferedWriter(tempFile, charset)) {
+    public static boolean overrideUserFile(User user) {
+        Path file = generateFileName(user.getName());
+        try (BufferedWriter writer = Files.newBufferedWriter(file, charset)) {
             writer.write(user.toString());
         } catch (IOException ioe) {
-            log.error("Error writing temp file.", ioe);
+            log.error("Error writing file.", ioe);
             return false;
         }
 

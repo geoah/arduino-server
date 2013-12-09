@@ -56,9 +56,9 @@ This is 1 byte field responsible for storing code of requested from [client comm
 ## Response Codes
 Every command will return json object. It will be either requested info (like loadProfile) either [response code](https://github.com/doom369/arduino-server/blob/master/server/src/main/java/com/ddumanskiy/arduino/response/ResponseCode.java) message in case of error or in case of command that doesn't return anything (like saveProfile):
 Response object -
-	{"code":1}
+	{"code":200}
 
-    1 - message was successfully processed/passed to arduino board
+    200 - message was successfully processed/passed to arduino board
     
     2 - command is bad formed, check syntax and passed params
     3 - user not registered
@@ -67,6 +67,7 @@ Response object -
     6 - user not allowed to perfrom this operation (most probably not logged or socket was closed)
     7 - arduino board not in network
     8 - command not supported
+    500 - server error. something went wrong on server
 
 ## User Profile JSON structure
 	{ "dashBoards" : 

@@ -41,7 +41,7 @@ public final class UserRegistry {
 
         //todo, yes this not optimal solution, but who cares?
         //todo this may be moved to separate thread
-        FileManager.saveUserToFile(newUser);
+        FileManager.saveNewUserToFile(newUser);
 
         MailTLS.sendMail(userName, "You just registered to Arduino control.", newUser.getId());
 
