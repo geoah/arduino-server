@@ -32,7 +32,7 @@ Any read command (analogRead, digitalRead) should always have same messageId for
 After you reconfigured graph1 to read another pin, load command will still look the same. So messageID will be an ID of widget to draw results on.
 
 ### Command field
-This is 1 byte field responsible for storing code of requested from client command, like login, digitalWrite, etc...
+This is 1 byte field responsible for storing code of requested from [client command](https://github.com/doom369/arduino-server/blob/master/common/src/main/java/com/ddumanskiy/arduino/common/Command.java), like login, digitalWrite, etc...
 
 #### Mobile client command codes
 
@@ -54,7 +54,7 @@ This is 1 byte field responsible for storing code of requested from client comma
         31 - reset all state info on arduino (not hardware reset)
 
 ## Response Codes
-Every command will return json object. It will be either requested info (like loadProfile) either response code message in case of error or in case of command that doesn't return anything (like saveProfile):
+Every command will return json object. It will be either requested info (like loadProfile) either [response code](https://github.com/doom369/arduino-server/blob/master/server/src/main/java/com/ddumanskiy/arduino/response/ResponseCode.java) message in case of error or in case of command that doesn't return anything (like saveProfile):
 Response object -
 	{"code":1}
 
