@@ -5,14 +5,11 @@ import com.ddumanskiy.arduino.auth.UserRegistry;
 import com.ddumanskiy.arduino.common.Command;
 import com.ddumanskiy.arduino.common.message.Message;
 import com.ddumanskiy.arduino.mail.EMailValidator;
-import com.ddumanskiy.arduino.mail.MailTLS;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
-
-import java.util.UUID;
 
 import static com.ddumanskiy.arduino.server.response.ResponseCode.*;
 
@@ -63,31 +60,28 @@ public class RegisterHandler extends BaseSimpleChannelHandler {
             return;
         }
 
-        String user = messageParts[0].toLowerCase();
+        String userName = messageParts[0].toLowerCase();
         //TODO encryption, SSL sockets.
         String pass = messageParts[1];
-        log.info("Trying register user : {}", user);
+        log.info("Trying register user : {}", userName);
 
-        if (!EMailValidator.isValid(user)) {
-            log.error("Register Handler. Wrong email: {}", user);
+        if (!EMailValidator.isValid(userName)) {
+            log.error("Register Handler. Wrong email: {}", userName);
             message.setBody(INVALID_COMMAND_FORMAT);
             incomeChannel.write(message);
             return;
         }
 
-        if (UserRegistry.isUserExists(user)) {
-            log.error("User with name {} already exists.", user);
+        if (UserRegistry.isUserExists(userName)) {
+            log.error("User with name {} already exists.", userName);
             message.setBody(USER_ALREADY_REGISTERED);
             incomeChannel.write(message);
             return;
         }
 
-        log.info("Registering {}.", user);
+        log.info("Registering {}.", userName);
 
-        String id = UUID.randomUUID().toString();
-
-        UserRegistry.createNewUser(user, pass, id);
-        MailTLS.sendMail(user, "You just registered to Arduino control.", id);
+        UserRegistry.createNewUser(userName, pass);
 
         message.setBody(OK);
         incomeChannel.write(message);

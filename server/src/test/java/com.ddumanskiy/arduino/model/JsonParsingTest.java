@@ -18,7 +18,7 @@ public class JsonParsingTest {
     public void testParseUserProfile() {
         InputStream is = this.getClass().getResourceAsStream("/user_profile_json.txt");
 
-        UserProfile userProfile = JsonParser.parse(is);
+        UserProfile userProfile = JsonParser.parseProfile(is);
         assertNotNull(userProfile);
         assertNotNull(userProfile.getDashBoards());
         assertEquals(userProfile.getDashBoards().length, 1);
@@ -49,7 +49,7 @@ public class JsonParsingTest {
     public void testUserProfileToJson() {
         InputStream is = this.getClass().getResourceAsStream("/user_profile_json.txt");
 
-        UserProfile userProfile = JsonParser.parse(is);
+        UserProfile userProfile = JsonParser.parseProfile(is);
         String userProfileString = userProfile.toString();
 
         assertNotNull(userProfileString);

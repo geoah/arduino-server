@@ -1,11 +1,13 @@
 package com.ddumanskiy.arduino.auth;
 
-import com.ddumanskiy.arduino.utils.Serializer;
+import com.ddumanskiy.arduino.mail.MailTLS;
+import com.ddumanskiy.arduino.utils.FileManager;
 
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Helper class for holding info regarding registered users and their password.
+ * Helper class for holding info regarding registered users and profiles.
  *
  * User: ddumanskiy
  * Date: 8/11/13
@@ -21,10 +23,8 @@ public final class UserRegistry {
 
     //init user DB if possible
     static {
-        users = Serializer.deserialize();
+        users = FileManager.deserialize();
     }
-
-
 
     public static boolean isUserExists(String name) {
         return users.get(name) != null;
@@ -34,18 +34,18 @@ public final class UserRegistry {
         return users.get(name);
     }
 
-    //todo dave every uses separately
-    public static void save() {
-        Serializer.serialize(users);
-    }
-
-    public static void createNewUser(String name, String pass, String id) {
-        User newUser = new User(name, pass, id);
-        users.putIfAbsent(name, newUser);
+    public static User createNewUser(String userName, String pass) {
+        String id = UUID.randomUUID().toString();
+        User newUser = new User(userName, pass, id);
+        users.putIfAbsent(userName, newUser);
 
         //todo, yes this not optimal solution, but who cares?
         //todo this may be moved to separate thread
-        Serializer.serialize(users);
+        FileManager.saveUserToFile(newUser);
+
+        MailTLS.sendMail(userName, "You just registered to Arduino control.", newUser.getId());
+
+        return newUser;
     }
 
 }

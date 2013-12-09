@@ -1,5 +1,6 @@
 package com.ddumanskiy.arduino.utils;
 
+import com.ddumanskiy.arduino.auth.User;
 import com.ddumanskiy.arduino.model.UserProfile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,7 +39,17 @@ public final class JsonParser {
         return "{}";
     }
 
-    public static UserProfile parse(String reader) {
+    public static User parseUser(String reader) {
+        try {
+            return mapper.reader(User.class).readValue(reader);
+        } catch (IOException e) {
+            log.error("Error parsing input string : {}", reader);
+            log.error(e);
+        }
+        return null;
+    }
+
+    public static UserProfile parseProfile(String reader) {
         try {
             return mapper.reader(UserProfile.class).readValue(reader);
         } catch (IOException e) {
@@ -48,7 +59,7 @@ public final class JsonParser {
         return null;
     }
 
-    public static UserProfile parse(InputStream reader) {
+    public static UserProfile parseProfile(InputStream reader) {
         try {
             return mapper.reader(UserProfile.class).readValue(reader);
         } catch (IOException e) {

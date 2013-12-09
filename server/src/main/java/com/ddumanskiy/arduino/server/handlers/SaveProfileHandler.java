@@ -3,10 +3,10 @@ package com.ddumanskiy.arduino.server.handlers;
 
 import com.ddumanskiy.arduino.auth.Session;
 import com.ddumanskiy.arduino.auth.User;
-import com.ddumanskiy.arduino.auth.UserRegistry;
 import com.ddumanskiy.arduino.common.Command;
 import com.ddumanskiy.arduino.common.message.Message;
 import com.ddumanskiy.arduino.model.UserProfile;
+import com.ddumanskiy.arduino.utils.FileManager;
 import com.ddumanskiy.arduino.utils.JsonParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,8 +55,8 @@ public class SaveProfileHandler extends BaseSimpleChannelHandler {
             return;
         }
 
-        log.info("Trying to parse user profile : {}", userProfileString);
-        UserProfile userProfile = JsonParser.parse(userProfileString);
+        log.info("Trying to parseProfile user profile : {}", userProfileString);
+        UserProfile userProfile = JsonParser.parseProfile(userProfileString);
         if (userProfile == null) {
             log.error("Register Handler. Wrong user profile message format.");
             message.setBody(INVALID_COMMAND_FORMAT);
@@ -75,7 +75,7 @@ public class SaveProfileHandler extends BaseSimpleChannelHandler {
         }
 
         authUser.setUserProfile(userProfile);
-        UserRegistry.save();
+        FileManager.saveUserToFile(authUser);
 
         message.setBody(OK);
         incomeChannel.write(message);

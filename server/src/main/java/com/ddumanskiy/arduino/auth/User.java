@@ -1,6 +1,7 @@
 package com.ddumanskiy.arduino.auth;
 
 import com.ddumanskiy.arduino.model.UserProfile;
+import com.ddumanskiy.arduino.utils.JsonParser;
 
 import java.io.Serializable;
 
@@ -20,6 +21,9 @@ public class User implements Serializable {
     private String id;
 
     private UserProfile userProfile;
+
+    public User() {
+    }
 
     public User(String name, String pass, String id) {
         this.name = name;
@@ -78,9 +82,6 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "User{" +
-                "pass='" + pass + '\'' +
-                ", name='" + name + '\'' +
-                '}';
+        return JsonParser.toJson(this);
     }
 }
