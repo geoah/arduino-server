@@ -57,7 +57,7 @@ This is 1 byte field responsible for storing code of requested from [client comm
         40 - reset a reading pin on arduino (used when load widget removed, for instance graph was reading pin and now not needed).
         Use case for graph1 :
         	length = 4, messageID = 1, command = 21, body = 1
-        	length = 3, messageID = 1, command = 30
+        	length = 3, messageID = 1, command = 40
         41 - reset all state info on arduino (not hardware reset)
 
 ## Response Codes
