@@ -2,6 +2,7 @@ package com.ddumanskiy.arduino.server.handlers;
 
 
 import com.ddumanskiy.arduino.auth.Session;
+import com.ddumanskiy.arduino.auth.TimerRegistry;
 import com.ddumanskiy.arduino.auth.User;
 import com.ddumanskiy.arduino.common.Command;
 import com.ddumanskiy.arduino.common.message.Message;
@@ -78,7 +79,7 @@ public class SaveProfileHandler extends BaseSimpleChannelHandler {
         boolean profileSaved = FileManager.overrideUserFile(authUser);
 
         if (profileSaved) {
-            //todo check timers here
+            TimerRegistry.checkUserHasTimers(authUser);
             message.setBody(OK);
         } else {
             message.setBody(SERVER_ERROR);

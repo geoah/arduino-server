@@ -18,7 +18,10 @@ public class Command {
     public static final byte ANALOG_WRITE = 20;
     public static final byte ANALOG_READ = 21;
 
-    public static final byte RESET = 30;
-    public static final byte RESET_ALL = 31;
+    public static final byte VIRTUAL_WRITE = 30;
+    public static final byte VIRTUAL_READ = 31;
+
+    public static final byte RESET = 40;
+    public static final byte RESET_ALL = 41;
 
 }

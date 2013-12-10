@@ -37,21 +37,28 @@ This is 1 byte field responsible for storing code of requested from [client comm
 #### Mobile client command codes
 
         1 - register; Must have 2 space-separated params as content field (username and pass) : "a@a.ua a"
-        2 - login;    Must have 2 space-separated params as content field (username and pass) : "a@a.ua a"
+        2 - login:
+            a) For mobile client must have 2 space-separated params as content field (username and pass) : "a@a.ua a"
+            b) For arduino client must have 1 param, user token : "6a7a3151cb044cd893a92033dd65f655"
         3 - save profile; Must have 1 param as content string : "{...}"
         4 - load profile; Don't have any params
         
 #### Arduino client command codes
 
-        10 - digital write; Must have 2 space-separated params as content string : "13 0" (Arduino digitalWrite(13, LOW)))
+        10 - digital write; Must have 2 space-separated params as content string : "13 0" (Arduino digitalWrite(13, LOW))
         11 - digital read; Must have 1 param as content string : "13"
-        20 - analog write; Must have 2 space-separated params as content string : "9 0" (Arduino analogWrite(9, 0)))
+
+        20 - analog write; Must have 2 space-separated params as content string : "9 0" (Arduino analogWrite(9, 0))
         21 - analog read; Must have 1 param as content string : "9"
-        30 - reset a reading pin on arduino (used when load widget removed, for instance graph was reading pin
-        and now not needed). Use case for graph1 :
+
+        30 - virtual pin write; Must have 2 space-separated params as content string : "9 0"
+        31 - virtual pin read; Must have 1 param as content string : "9"
+
+        40 - reset a reading pin on arduino (used when load widget removed, for instance graph was reading pin and now not needed).
+        Use case for graph1 :
         	length = 4, messageID = 1, command = 21, body = 1
         	length = 3, messageID = 1, command = 30
-        31 - reset all state info on arduino (not hardware reset)
+        41 - reset all state info on arduino (not hardware reset)
 
 ## Response Codes
 Every command will return json object. It will be either requested info (like loadProfile) either [response code](https://github.com/doom369/arduino-server/blob/master/server/src/main/java/com/ddumanskiy/arduino/response/ResponseCode.java) message in case of error or in case of command that doesn't return anything (like saveProfile):

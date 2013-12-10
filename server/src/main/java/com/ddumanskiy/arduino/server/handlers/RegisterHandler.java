@@ -52,7 +52,7 @@ public class RegisterHandler extends BaseSimpleChannelHandler {
             return;
         }
 
-        //expecting message with 3 parts, described above in comment.
+        //expecting message with 2 parts, described above in comment.
         if (messageParts.length != 2) {
             log.error("Register Handler. Wrong income message format.");
             message.setBody(INVALID_COMMAND_FORMAT);

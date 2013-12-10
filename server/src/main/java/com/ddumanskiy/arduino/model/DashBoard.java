@@ -1,7 +1,11 @@
 package com.ddumanskiy.arduino.model;
 
+import com.ddumanskiy.arduino.model.enums.WidgetType;
+
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * User: ddumanskiy
@@ -19,6 +23,21 @@ public class DashBoard {
     private Widget[] widgets;
 
     private Map<String, String> settings;
+
+    public Set<Widget> getTimerWidgets() {
+        if (widgets == null || widgets.length == 0) {
+            return null;
+        }
+
+        Set<Widget> timerWidgets = new HashSet<>();
+        for (Widget widget : widgets) {
+            if (widget.getType() == WidgetType.TIMER) {
+                timerWidgets.add(widget);
+            }
+        }
+
+        return timerWidgets;
+    }
 
     public long getId() {
         return id;

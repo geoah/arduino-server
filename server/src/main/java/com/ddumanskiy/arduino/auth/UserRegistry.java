@@ -20,10 +20,15 @@ public final class UserRegistry {
     }
 
     private static final ConcurrentHashMap<String, User> users;
+    private static final ConcurrentHashMap<String, User> userTokens;
 
     //init user DB if possible
     static {
         users = FileManager.deserialize();
+        userTokens = new ConcurrentHashMap<>(users.size());
+        for (User user : users.values()) {
+            userTokens.put(user.getId(), user);
+        }
     }
 
     public static boolean isUserExists(String name) {
@@ -34,10 +39,16 @@ public final class UserRegistry {
         return users.get(name);
     }
 
+    public static User getByToken(String token) {
+        return userTokens.get(token);
+    }
+
     public static User createNewUser(String userName, String pass) {
-        String id = UUID.randomUUID().toString();
+        String id = UUID.randomUUID().toString().replace("-", "");
         User newUser = new User(userName, pass, id);
-        users.putIfAbsent(userName, newUser);
+
+        users.put(userName, newUser);
+        userTokens.put(newUser.getId(), newUser);
 
         //todo, yes this not optimal solution, but who cares?
         //todo this may be moved to separate thread

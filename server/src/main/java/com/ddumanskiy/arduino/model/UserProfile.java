@@ -21,6 +21,20 @@ public class UserProfile {
         this.dashBoards = dashBoards;
     }
 
+    public DashBoard getActiveDashboard() {
+        if (dashBoards == null || dashBoards.length == 0) {
+            return null;
+        }
+
+        for (DashBoard dashBoard : dashBoards) {
+            if (dashBoard.getIsActive()) {
+                return dashBoard;
+            }
+        }
+
+        return null;
+    }
+
     @Override
     public String toString() {
         return JsonParser.toJson(this);

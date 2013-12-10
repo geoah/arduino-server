@@ -5,6 +5,7 @@ import com.ddumanskiy.arduino.auth.User;
 import com.ddumanskiy.arduino.common.Command;
 import com.ddumanskiy.arduino.common.message.Message;
 import com.ddumanskiy.arduino.server.GroupHolder;
+import com.ddumanskiy.arduino.server.handlers.enums.ChannelType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.*;
@@ -26,6 +27,8 @@ public class ArduinoCommandsHandler extends BaseSimpleChannelHandler {
             Command.DIGITAL_READ,
             Command.ANALOG_READ,
             Command.ANALOG_WRITE,
+            Command.VIRTUAL_READ,
+            Command.VIRTUAL_WRITE,
             Command.RESET,
             Command.RESET_ALL
     };
@@ -64,12 +67,12 @@ public class ArduinoCommandsHandler extends BaseSimpleChannelHandler {
             return;
         }
 
-        for (Channel current : group) {
+        for (Channel outChannel : group) {
             //sending message for all except those one that sends
-            if (!current.getId().equals(incomeChannel.getId())) {
-                log.info("Found channel to send message to " + current.getId() + ", message: " + message);
+            if (!outChannel.getId().equals(incomeChannel.getId()) && isCorrectChannel(outChannel, incomeChannel)) {
+                log.info("Found channel to send message to " + outChannel.getId() + ", message: " + message);
                 //todo here may be a lot of channels... so how to send response back to user?
-                ChannelFuture future = current.write(message);
+                ChannelFuture future = outChannel.write(message);
 
                 future.addListener(new ChannelFutureListener() {
                     public void operationComplete(ChannelFuture future) {
@@ -80,6 +83,17 @@ public class ArduinoCommandsHandler extends BaseSimpleChannelHandler {
                 });
             }
         }
+    }
+
+    private static boolean isCorrectChannel(Channel outChannel, Channel incomeChannel) {
+        //if message from mobile client, than out channel should be arduino
+        if (incomeChannel.getAttachment() == null || incomeChannel.getAttachment() == ChannelType.MOBILE_CLIENT) {
+            return outChannel.getAttachment() != null && (outChannel.getAttachment() == ChannelType.ARDUINO);
+        //if income channel arduino, than output should be mobile client
+        } else {
+            return outChannel.getAttachment() == null || (outChannel.getAttachment() == ChannelType.MOBILE_CLIENT);
+        }
+
     }
 
 }

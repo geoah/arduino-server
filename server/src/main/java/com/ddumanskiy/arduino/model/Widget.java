@@ -29,6 +29,7 @@ public class Widget {
     private State state;
 
     //for TIMER widget
+    //unix time
     private Long startTime;
     private Long stopTime;
 
