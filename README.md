@@ -29,7 +29,9 @@ Any read command (analogRead, digitalRead) should always have same messageId for
         length = 4, messageID = 1, command = 21, body = 1; for graph 1
         length = 4, messageID = 2, command = 21, body = 2; for graph 2
         
-After you reconfigured graph1 to read another pin, load command will still look the same. So messageID will be an ID of widget to draw results on.
+After you reconfigured graph1 to read another pin, load command will still look the same. So messageID will be an ID of widget to draw results on
+
+IMPORTANT : ZERO VALUE FOR MESSAGE ID IS RESERVED AND SHOULDN'T BE USED BY CLIENTS.
 
 ### Command field
 This is 1 byte field responsible for storing code of requested from [client command](https://github.com/doom369/arduino-server/blob/master/common/src/main/java/com/ddumanskiy/arduino/common/Command.java), like login, digitalWrite, etc...
@@ -89,16 +91,16 @@ Response object -
 
 ## Widgets JSON structure
 
-	Button				: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"BUTTON",         "pin":"D13", "value":"1"   } -- sends HIGH on digital pin 13. Possible values 1|0.
-	Toggle Button ON	: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"TOGGLE_BUTTON",  "pin":"D18", "value":"1", "state":"ON"} -- sends 1 on digital pin 18
-	Toggle Button OFF	: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"TOGGLE_BUTTON",  "pin":"D18", "value":"0", "state":"OFF"} -- sends 0 on digital pin 18
-	Slider				: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"SLIDER",         "pin":"A18", "value":"244" } -- sends 244 on analog pin 18. Possible values -9999 to 9999
-	Timer				: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"TIMER",          "pin":"D13", "value":"1", "startTime" : 1111111111, "stopTime" : 111111111} -- startTime is Unix Time.
+	Button				: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"BUTTON",         "pinType":"DIGITAL", "pin":13, "value":"1"   } -- sends HIGH on digital pin 13. Possible values 1|0.
+	Toggle Button ON	: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"TOGGLE_BUTTON",  "pinType":"DIGITAL", "pin":18, "value":"1", "state":"ON"} -- sends 1 on digital pin 18
+	Toggle Button OFF	: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"TOGGLE_BUTTON",  "pinType":"VIRTUAL", "pin":18, "value":"0", "state":"OFF"} -- sends 0 on digital pin 18
+	Slider				: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"SLIDER",         "pinType":"ANALOG",  "pin":18, "value":"244" } -- sends 244 on analog pin 18. Possible values -9999 to 9999
+	Timer				: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"TIMER",          "pinType":"DIGITAL", "pin":13, "value":"1", "startTime" : 1111111111, "stopTime" : 111111111} -- startTime is Unix Time.
 
 	//pin reading widgets
-	LED					: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"LED",            "pin":"D10"} - sends READ pin to server
-	Digit Display		: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"DIGIT4_DISPLAY", "pin":"D10"} - sends READ pin to server
-	Graph				: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"GRAPH",          "pin":"D10"} - sends READ pin to server
+	LED					: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"LED",            "pinType":"DIGITAL", "pin":10} - sends READ pin to server
+	Digit Display		: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"DIGIT4_DISPLAY", "pinType":"DIGITAL", "pin":10} - sends READ pin to server
+	Graph				: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"GRAPH",          "pinType":"DIGITAL", "pin":10} - sends READ pin to server
 
 ## START
 

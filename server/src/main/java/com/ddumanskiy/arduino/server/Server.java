@@ -1,6 +1,7 @@
 package com.ddumanskiy.arduino.server;
 
 import com.ddumanskiy.arduino.common.Utils;
+import com.ddumanskiy.arduino.server.timer.TimerChecker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.bootstrap.ServerBootstrap;
@@ -44,12 +45,20 @@ public class Server {
         ChannelFactory factory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool(),  Executors.newCachedThreadPool());
         ServerBootstrap bootstrap = new ServerBootstrap(factory);
 
-        bootstrap.setPipelineFactory(new ChannelsPipe());
+        ChannelsPipe channelsPipe = new ChannelsPipe();
+        bootstrap.setPipelineFactory(channelsPipe);
 
         bootstrap.setOption("child.tcpNoDelay", true);
         bootstrap.setOption("child.keepAlive", true);
 
         bootstrap.bind(new InetSocketAddress(port));
+
+        //starting timer processing thread
+        try {
+            new Thread(new TimerChecker(1000, channelsPipe.getPipeline())).start();
+        } catch (Exception e) {
+            log.error(e);
+        }
 
         log.info("Server started.");
      }

@@ -1,5 +1,6 @@
 package com.ddumanskiy.arduino.model;
 
+import com.ddumanskiy.arduino.model.enums.PinType;
 import com.ddumanskiy.arduino.model.enums.State;
 import com.ddumanskiy.arduino.model.enums.WidgetType;
 
@@ -22,7 +23,9 @@ public class Widget {
 
     private WidgetType type;
 
-    private String pin;
+    private PinType pinType;
+
+    private Integer pin;
 
     private String value;
 
@@ -81,11 +84,19 @@ public class Widget {
         this.type = type;
     }
 
-    public String getPin() {
+    public PinType getPinType() {
+        return pinType;
+    }
+
+    public void setPinType(PinType pinType) {
+        this.pinType = pinType;
+    }
+
+    public Integer getPin() {
         return pin;
     }
 
-    public void setPin(String pin) {
+    public void setPin(Integer pin) {
         this.pin = pin;
     }
 
@@ -134,6 +145,7 @@ public class Widget {
         if (y != widget.y) return false;
         if (label != null ? !label.equals(widget.label) : widget.label != null) return false;
         if (pin != null ? !pin.equals(widget.pin) : widget.pin != null) return false;
+        if (pinType != widget.pinType) return false;
         if (startTime != null ? !startTime.equals(widget.startTime) : widget.startTime != null) return false;
         if (state != widget.state) return false;
         if (stopTime != null ? !stopTime.equals(widget.stopTime) : widget.stopTime != null) return false;
@@ -151,6 +163,7 @@ public class Widget {
         result = 31 * result + (int) (dashBoardId ^ (dashBoardId >>> 32));
         result = 31 * result + (label != null ? label.hashCode() : 0);
         result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (pinType != null ? pinType.hashCode() : 0);
         result = 31 * result + (pin != null ? pin.hashCode() : 0);
         result = 31 * result + (value != null ? value.hashCode() : 0);
         result = 31 * result + (state != null ? state.hashCode() : 0);

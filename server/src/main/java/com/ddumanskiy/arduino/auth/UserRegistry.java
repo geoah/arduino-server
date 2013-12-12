@@ -28,6 +28,7 @@ public final class UserRegistry {
         userTokens = new ConcurrentHashMap<>(users.size());
         for (User user : users.values()) {
             userTokens.put(user.getId(), user);
+            TimerRegistry.checkUserHasTimers(user);
         }
     }
 

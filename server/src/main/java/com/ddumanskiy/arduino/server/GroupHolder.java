@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class GroupHolder {
 
-    private static Map<User, DefaultChannelGroup> privateRooms = new ConcurrentHashMap<User, DefaultChannelGroup>();
+    private static Map<User, DefaultChannelGroup> privateRooms = new ConcurrentHashMap<>();
 
     public static Map<User, DefaultChannelGroup> getPrivateRooms() {
         return privateRooms;

@@ -15,14 +15,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class TimerRegistry {
 
-    private static final ConcurrentHashMap<String, Set<Widget>> startTimers = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<String, Set<Widget>> stopTimers = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<User, Set<Widget>> startTimers = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<User, Set<Widget>> stopTimers = new ConcurrentHashMap<>();
 
-    public static ConcurrentHashMap<String, Set<Widget>> getStartTimers() {
+    public static ConcurrentHashMap<User, Set<Widget>> getStartTimers() {
         return startTimers;
     }
 
-    public static ConcurrentHashMap<String, Set<Widget>> getStopTimers() {
+    public static ConcurrentHashMap<User, Set<Widget>> getStopTimers() {
         return stopTimers;
     }
 
@@ -33,16 +33,16 @@ public class TimerRegistry {
     public static void checkUserHasTimers(User user) {
         UserProfile profile = user.getUserProfile();
         if (profile == null) {
-            startTimers.remove(user.getName());
-            stopTimers.remove(user.getName());
+            startTimers.remove(user);
+            stopTimers.remove(user);
             return;
         }
 
         DashBoard activeDashboard = profile.getActiveDashboard();
 
         if (activeDashboard == null) {
-            startTimers.remove(user.getName());
-            stopTimers.remove(user.getName());
+            startTimers.remove(user);
+            stopTimers.remove(user);
             return;
         }
 
@@ -50,16 +50,16 @@ public class TimerRegistry {
 
         Set<Widget> stopTimeWidgets = validateStopTimers(activeDashboard.getTimerWidgets());
         if (stopTimeWidgets == null || stopTimeWidgets.size() == 0) {
-            stopTimers.remove(user.getName());
+            stopTimers.remove(user);
         } else {
-            stopTimers.put(user.getName(), stopTimeWidgets);
+            stopTimers.put(user, stopTimeWidgets);
         }
 
         Set<Widget> startTimeWidgets = validateStartTimers(activeDashboard.getTimerWidgets());
         if (startTimeWidgets == null || startTimeWidgets.size() == 0) {
-            startTimers.remove(user.getName());
+            startTimers.remove(user);
         } else {
-            startTimers.put(user.getName(), startTimeWidgets);
+            startTimers.put(user, startTimeWidgets);
         }
 
     }
@@ -71,7 +71,7 @@ public class TimerRegistry {
 
         Set<Widget> validatedWidgets = new HashSet<>();
         for (Widget timer : widgets) {
-            if (isStartTimerValid(timer)) {
+            if (isValidFields(timer) && isStartTimerValid(timer)) {
                 validatedWidgets.add(timer);
             }
         }
@@ -97,7 +97,7 @@ public class TimerRegistry {
 
         Set<Widget> validatedWidgets = new HashSet<>();
         for (Widget timer : widgets) {
-            if (isStopTimerValid(timer)) {
+            if (isValidFields(timer) && isStopTimerValid(timer)) {
                 validatedWidgets.add(timer);
             }
         }
@@ -114,5 +114,9 @@ public class TimerRegistry {
         }
 
         return false;
+    }
+
+    private static boolean isValidFields(Widget timer) {
+        return timer.getPinType() != null && timer.getPin() != null;
     }
 }

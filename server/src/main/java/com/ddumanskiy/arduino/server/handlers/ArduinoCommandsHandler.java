@@ -88,12 +88,19 @@ public class ArduinoCommandsHandler extends BaseSimpleChannelHandler {
     private static boolean isCorrectChannel(Channel outChannel, Channel incomeChannel) {
         //if message from mobile client, than out channel should be arduino
         if (incomeChannel.getAttachment() == null || incomeChannel.getAttachment() == ChannelType.MOBILE_CLIENT) {
-            return outChannel.getAttachment() != null && (outChannel.getAttachment() == ChannelType.ARDUINO);
+            return isArduinoChannel(outChannel);
         //if income channel arduino, than output should be mobile client
         } else {
-            return outChannel.getAttachment() == null || (outChannel.getAttachment() == ChannelType.MOBILE_CLIENT);
+            return isMobileChannel(outChannel);
         }
 
     }
 
+    public static boolean isArduinoChannel(Channel channel) {
+        return channel.getAttachment() != null && (channel.getAttachment() == ChannelType.ARDUINO);
+    }
+
+    public static boolean isMobileChannel(Channel channel) {
+        return channel.getAttachment() == null || (channel.getAttachment() == ChannelType.MOBILE_CLIENT);
+    }
 }
