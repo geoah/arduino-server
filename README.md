@@ -1,5 +1,5 @@
 # Arduino-server
-
+Java 7 required.
 
 # Clients protocol
 
