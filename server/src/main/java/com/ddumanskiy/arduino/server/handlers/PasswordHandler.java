@@ -73,6 +73,13 @@ public class PasswordHandler extends BaseSimpleChannelHandler {
 
         User user = UserRegistry.getByName(userName);
 
+        if (user == null) {
+            log.error("User not registered.", userName);
+            message.setBody(NOT_ALLOWED);
+            incomeChannel.write(message);
+            return;
+        }
+
         //todo fix pass validation
         if (!user.getPass().equals(pass)) {
             log.error("Bad password. User : {}; Pass : {}", userName, pass);
