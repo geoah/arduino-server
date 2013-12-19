@@ -107,19 +107,25 @@ Response object -
 For server launch:
 java -jar server.jar 8080
 
-For client launch
+For client 1 launch
+java -jar client.jar localhost 8080
+
+For client 2 launch
 java -jar client.jar localhost 8080
 
 You can run as many clients as you want.
 
-First command for client should be "register pupkin@mail.ua pupkin_pass".
-Next command is "login pupkin@mail.ua pupkin_pass".
+First command for client 1 should be "register pupkin@mail.ua pupkin_pass". When registering, email is send to provided login name with code snippet required for start (or you can have a look in server logs and can find generated login token for arduino).
+Next command is for client 2 "login 6a7a3151cb044cd893a92033dd65f655". Where "6a7a3151cb044cd893a92033dd65f655" is login token genarated for pupkin@mail.ua username.
 
-Where pupkin@mail.ua your email and pupkin_pass your pass. Now you are ready to send messages.
-
-When registering email is send to provided login name with code snippet required for start.
+Now you are ready to send messages between both clients. All client commands are human-flriendly, so you don't have to remember codes, for isntance :
+"digitalWrite 1 1"
+"digitalRead 1"
+"analogWrite 1 1"
+"analogRead 1"
+"virtualWrite 1 1"
+"virtualRead 1"
 
 Clients with same username token will be grouped within one room/group. And can send messages to each other.
 
 Registered users are stored locally in TMP dir of your system in file "user.db". So after restart you don't have to register again.
-
