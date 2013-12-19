@@ -137,6 +137,12 @@ public class Client {
         if ("analogRead".equalsIgnoreCase(commandWord)) {
             return Command.ANALOG_READ;
         }
+        if ("virtualWrite".equalsIgnoreCase(commandWord)) {
+            return Command.VIRTUAL_WRITE;
+        }
+        if ("virtualRead".equalsIgnoreCase(commandWord)) {
+            return Command.VIRTUAL_READ;
+        }
         if ("reset".equalsIgnoreCase(commandWord)) {
             return Command.RESET;
         }
