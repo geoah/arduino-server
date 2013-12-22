@@ -48,7 +48,7 @@ public class Server {
         ChannelsPipe channelsPipe = new ChannelsPipe();
         bootstrap.setPipelineFactory(channelsPipe);
 
-        bootstrap.setOption("child.tcpNoDelay", true);
+        //bootstrap.setOption("child.tcpNoDelay", true);
         bootstrap.setOption("child.keepAlive", true);
 
         bootstrap.bind(new InetSocketAddress(port));
