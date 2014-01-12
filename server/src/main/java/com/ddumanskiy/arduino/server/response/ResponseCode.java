@@ -18,6 +18,7 @@ public class ResponseCode {
     public static final String NOT_ALLOWED = new ResponseCode(6).toString();
     public static final String DEVICE_NOT_IN_NETWORK = new ResponseCode(7).toString();
     public static final String NOT_SUPPORTED_COMMAND = new ResponseCode(8).toString();
+    public static final String INVALID_TOKEN = new ResponseCode(9).toString();
     public static final String SERVER_ERROR = new ResponseCode(500).toString();
 
     private int code;

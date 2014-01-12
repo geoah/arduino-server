@@ -68,12 +68,6 @@ public class SaveProfileHandler extends BaseSimpleChannelHandler {
         log.info("Trying save user profile.");
 
         User authUser = Session.getChannelToken().get(incomeChannel.getId());
-        if (authUser == null) {
-            log.error("Channel not authorized. Send login first. Closing socket.");
-            message.setBody(USER_NOT_AUTHENTICATED);
-            incomeChannel.write(message);
-            return;
-        }
 
         authUser.setUserProfile(userProfile);
         boolean profileSaved = FileManager.overrideUserFile(authUser);

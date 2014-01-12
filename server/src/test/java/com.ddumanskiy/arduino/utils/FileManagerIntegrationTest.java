@@ -18,8 +18,8 @@ import static org.junit.Assert.*;
  */
 public class FileManagerIntegrationTest {
 
-    private User user1 = new User("name1", "pass1", "id1");
-    private User user2 = new User("name2", "pass2", "id2");
+    private User user1 = new User("name1", "pass1");
+    private User user2 = new User("name2", "pass2");
 
     @Before
     public void cleanup() throws IOException {

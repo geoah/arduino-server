@@ -44,6 +44,7 @@ This is 1 byte field responsible for storing code of requested from [client comm
             b) For arduino client must have 1 param, user token : "6a7a3151cb044cd893a92033dd65f655"
         3 - save profile; Must have 1 param as content string : "{...}"
         4 - load profile; Don't have any params
+        5 - get token; Must have 1 int param, dash board id : "1"
         
 #### Arduino client command codes
 
@@ -76,13 +77,14 @@ Response object -
     6 - user not allowed to perfrom this operation (most probably not logged or socket was closed)
     7 - arduino board not in network
     8 - command not supported
+    9 - token not valid
     500 - server error. something went wrong on server
 
 ## User Profile JSON structure
 	{ "dashBoards" : 
 		[ 
 			{
-			 "id":1, "name":"My Dashboard", "isActive":true, 
+			 "id":1, "name":"My Dashboard", "isActive":true, "timestamp":333333,
 			 "widgets"  : [...], 
 			 "settings" : {"boardType":"UNO", ..., "someParam":"someValue"}
 			}
@@ -91,7 +93,7 @@ Response object -
 
 ## Widgets JSON structure
 
-	Button				: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"BUTTON",         "pinType":"DIGITAL", "pin":13, "value":"1"   } -- sends HIGH on digital pin 13. Possible values 1|0.
+	Button				: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"BUTTON",         "pinType":"NONE", "pin":13, "value":"1"   } -- sends HIGH on digital pin 13. Possible values 1|0.
 	Toggle Button ON	: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"TOGGLE_BUTTON",  "pinType":"DIGITAL", "pin":18, "value":"1", "state":"ON"} -- sends 1 on digital pin 18
 	Toggle Button OFF	: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"TOGGLE_BUTTON",  "pinType":"VIRTUAL", "pin":18, "value":"0", "state":"OFF"} -- sends 0 on digital pin 18
 	Slider				: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"SLIDER",         "pinType":"ANALOG",  "pin":18, "value":"244" } -- sends 244 on analog pin 18. Possible values -9999 to 9999
@@ -100,7 +102,7 @@ Response object -
 	//pin reading widgets
 	LED					: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"LED",            "pinType":"DIGITAL", "pin":10} - sends READ pin to server
 	Digit Display		: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"DIGIT4_DISPLAY", "pinType":"DIGITAL", "pin":10} - sends READ pin to server
-	Graph				: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"GRAPH",          "pinType":"DIGITAL", "pin":10} - sends READ pin to server
+	Graph				: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"GRAPH",          "pinType":"DIGITAL", "pin":10, "readingFrequency":1000} - sends READ pin to server
 
 ## START
 

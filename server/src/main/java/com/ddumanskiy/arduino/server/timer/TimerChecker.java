@@ -35,6 +35,10 @@ public class TimerChecker implements Runnable {
 
     private static final Logger log = LogManager.getLogger(TimerChecker.class);
 
+    public TimerChecker() {
+        this.sleepIntervalMillis = 1000;
+    }
+
     public TimerChecker(long sleepIntervalMillis, ChannelPipeline channelPipeline) {
         this.sleepIntervalMillis = sleepIntervalMillis;
         this.channelPipeline = channelPipeline;

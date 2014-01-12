@@ -1,8 +1,10 @@
 package com.ddumanskiy.arduino.auth;
 
-import com.ddumanskiy.arduino.mail.MailTLS;
 import com.ddumanskiy.arduino.utils.FileManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,19 +17,18 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class UserRegistry {
 
+    private static final Logger log = LogManager.getLogger(UserRegistry.class);
+
     private UserRegistry() {
 
     }
 
     private static final ConcurrentHashMap<String, User> users;
-    private static final ConcurrentHashMap<String, User> userTokens;
 
     //init user DB if possible
     static {
         users = FileManager.deserialize();
-        userTokens = new ConcurrentHashMap<>(users.size());
         for (User user : users.values()) {
-            userTokens.put(user.getId(), user);
             TimerRegistry.checkUserHasTimers(user);
         }
     }
@@ -40,23 +41,48 @@ public final class UserRegistry {
         return users.get(name);
     }
 
+    //todo optimize
     public static User getByToken(String token) {
-        return userTokens.get(token);
+        for (User user : users.values()) {
+            for (String userToken : user.getDashTokens().values()) {
+                if (userToken.equals(token)) {
+                    return user;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static String getToken(User user, Long dashboardId) {
+        Map<Long, String> dashTokens = user.getDashTokens();
+        String token = dashTokens.get(dashboardId);
+
+        //if token not exists. generate new one
+        if (token == null) {
+            log.info("Token for user {} and dashId {} not generated yet.", user.getName(), dashboardId);
+            token = generateNewToken();
+            log.info("Generated token for user {} and dashId {} is {}.", user.getName(), dashboardId, token);
+            user.getDashTokens().put(dashboardId, token);
+            FileManager.overrideUserFile(user);
+        } else {
+            log.info("Token for user {} and dashId {} generated already. Token {}", user.getName(), dashboardId, token);
+        }
+
+        return token;
+    }
+
+    private static String generateNewToken() {
+        return UUID.randomUUID().toString().replace("-", "");
     }
 
     public static User createNewUser(String userName, String pass) {
-        String id = UUID.randomUUID().toString().replace("-", "");
-        User newUser = new User(userName, pass, id);
+        User newUser = new User(userName, pass);
 
         users.put(userName, newUser);
-        userTokens.put(newUser.getId(), newUser);
 
         //todo, yes this not optimal solution, but who cares?
         //todo this may be moved to separate thread
         FileManager.saveNewUserToFile(newUser);
-
-        MailTLS.sendMail(userName, "You just registered to Arduino control.", newUser.getId());
-
         return newUser;
     }
 

@@ -108,7 +108,7 @@ public class Client {
                 continue;
             }
 
-            serverChannel.write(new Message((short)random.nextInt(Short.MAX_VALUE), command, input[1]));
+            serverChannel.write(new Message((short)random.nextInt(Short.MAX_VALUE), command, input.length == 1 ? "" : input[1]));
         }
     }
 
@@ -148,6 +148,9 @@ public class Client {
         }
         if ("resetAll".equalsIgnoreCase(commandWord)) {
             return Command.RESET_ALL;
+        }
+        if ("getToken".equalsIgnoreCase(commandWord)) {
+            return Command.GET_TOKEN;
         }
 
         throw new IllegalArgumentException("Wrong command " + commandWord);

@@ -4,6 +4,8 @@ import com.ddumanskiy.arduino.model.UserProfile;
 import com.ddumanskiy.arduino.utils.JsonParser;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * User: ddumanskiy
@@ -22,13 +24,14 @@ public class User implements Serializable {
 
     private UserProfile userProfile;
 
+    private Map<Long, String> dashTokens = new HashMap<>();
+
     public User() {
     }
 
-    public User(String name, String pass, String id) {
+    public User(String name, String pass) {
         this.name = name;
         this.pass = pass;
-        this.id = id;
     }
 
     public String getName() {
@@ -61,6 +64,14 @@ public class User implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Map<Long, String> getDashTokens() {
+        return dashTokens;
+    }
+
+    public void setDashTokens(Map<Long, String> dashTokens) {
+        this.dashTokens = dashTokens;
     }
 
     @Override

@@ -75,7 +75,7 @@ public class PasswordHandler extends BaseSimpleChannelHandler {
 
         if (user == null) {
             log.error("User not registered.", userName);
-            message.setBody(NOT_ALLOWED);
+            message.setBody(USER_NOT_REGISTERED);
             incomeChannel.write(message);
             return;
         }

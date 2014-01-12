@@ -20,6 +20,8 @@ public class DashBoard {
 
     private boolean isActive;
 
+    private Long timestamp;
+
     private Widget[] widgets;
 
     private Map<String, String> settings;
@@ -77,6 +79,14 @@ public class DashBoard {
 
     public void setSettings(Map<String, String> settings) {
         this.settings = settings;
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
     }
 
     @Override

@@ -52,12 +52,6 @@ public class ArduinoCommandsHandler extends BaseSimpleChannelHandler {
 
         //this means not authentificated attempt
         User authUser = Session.getChannelToken().get(incomeChannel.getId());
-        if (authUser == null) {
-            log.error("Channel not authorized. Send login first.");
-            message.setBody(USER_NOT_AUTHENTICATED);
-            incomeChannel.write(message);
-            return;
-        }
 
         DefaultChannelGroup group = GroupHolder.getPrivateRooms().get(authUser);
 

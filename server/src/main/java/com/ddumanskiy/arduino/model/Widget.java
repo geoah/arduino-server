@@ -17,6 +17,10 @@ public class Widget {
 
     private int y;
 
+    private Integer width;
+
+    private Integer height;
+
     private long dashBoardId;
 
     private String label;
@@ -30,6 +34,8 @@ public class Widget {
     private String value;
 
     private State state;
+
+    private Long readingFrequency;
 
     //for TIMER widget
     //unix time
@@ -130,6 +136,30 @@ public class Widget {
 
     public void setStopTime(Long stopTime) {
         this.stopTime = stopTime;
+    }
+
+    public Long getReadingFrequency() {
+        return readingFrequency;
+    }
+
+    public void setReadingFrequency(Long readingFrequency) {
+        this.readingFrequency = readingFrequency;
+    }
+
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
     }
 
     @Override

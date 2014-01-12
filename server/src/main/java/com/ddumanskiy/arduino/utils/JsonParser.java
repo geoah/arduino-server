@@ -4,6 +4,7 @@ import com.ddumanskiy.arduino.auth.User;
 import com.ddumanskiy.arduino.model.UserProfile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -23,7 +24,8 @@ public final class JsonParser {
     //it is threadsafe
     private static ObjectMapper mapper = new ObjectMapper()
             .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL)
-            .configure(SerializationConfig.Feature.WRITE_NULL_MAP_VALUES, false);
+            .configure(SerializationConfig.Feature.WRITE_NULL_MAP_VALUES, false)
+            .configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     private JsonParser() {
 

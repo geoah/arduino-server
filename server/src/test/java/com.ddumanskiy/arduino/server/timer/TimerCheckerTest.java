@@ -12,6 +12,7 @@ import org.jboss.netty.channel.DownstreamMessageEvent;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -44,7 +45,8 @@ public class TimerCheckerTest {
     @Mock
     private DefaultChannelGroup group;
 
-    private TimerChecker timerChecker = new TimerChecker(1000, channelPipeline);
+    @InjectMocks
+    private TimerChecker timerChecker;
 
 
 

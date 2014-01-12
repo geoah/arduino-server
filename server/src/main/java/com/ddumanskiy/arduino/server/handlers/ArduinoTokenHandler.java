@@ -11,7 +11,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 
-import static com.ddumanskiy.arduino.server.response.ResponseCode.NOT_ALLOWED;
+import static com.ddumanskiy.arduino.server.response.ResponseCode.INVALID_TOKEN;
 
 /**
  * Used before login in order to validate pass and brute force basic def.
@@ -57,7 +57,7 @@ public class ArduinoTokenHandler extends BaseSimpleChannelHandler {
 
         if (user == null) {
             log.error("Arduino token {} doesn't valid.", arduinoToken);
-            message.setBody(NOT_ALLOWED);
+            message.setBody(INVALID_TOKEN);
             incomeChannel.write(message);
             return;
         }

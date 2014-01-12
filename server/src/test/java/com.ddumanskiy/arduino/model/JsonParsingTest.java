@@ -55,4 +55,26 @@ public class JsonParsingTest {
         assertNotNull(userProfileString);
         assertTrue(userProfileString.contains("dashBoards"));
     }
+
+    @Test
+    public void testUserProfileToJson2() {
+        InputStream is = this.getClass().getResourceAsStream("/user_profile_json_2.txt");
+
+        UserProfile userProfile = JsonParser.parseProfile(is);
+        String userProfileString = userProfile.toString();
+
+        assertNotNull(userProfileString);
+        assertTrue(userProfileString.contains("dashBoards"));
+    }
+
+    @Test
+    public void testUserProfileToJson3() {
+        InputStream is = this.getClass().getResourceAsStream("/user_profile_json_3.txt");
+
+        UserProfile userProfile = JsonParser.parseProfile(is);
+        String userProfileString = userProfile.toString();
+
+        assertNotNull(userProfileString);
+        assertTrue(userProfileString.contains("dashBoards"));
+    }
 }

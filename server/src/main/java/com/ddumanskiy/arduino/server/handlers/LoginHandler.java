@@ -7,6 +7,7 @@ import com.ddumanskiy.arduino.auth.UserRegistry;
 import com.ddumanskiy.arduino.common.Command;
 import com.ddumanskiy.arduino.common.message.Message;
 import com.ddumanskiy.arduino.server.GroupHolder;
+import com.ddumanskiy.arduino.server.response.ResponseCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.Channel;
@@ -43,6 +44,14 @@ public class LoginHandler extends BaseSimpleChannelHandler {
         String[] messageParts = message.getBody().split(" ", 2);
 
         if (!isHandlerCommand(message.getCommand())) {
+            User authUser = Session.getChannelToken().get(incomeChannel.getId());
+            if (authUser == null) {
+                log.error("Channel not authorized. Send login first.");
+                message.setBody(ResponseCode.USER_NOT_AUTHENTICATED);
+                incomeChannel.write(message);
+                return;
+            }
+
             ctx.sendUpstream(e);
             return;
         }

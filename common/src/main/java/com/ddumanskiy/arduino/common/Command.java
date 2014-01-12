@@ -11,6 +11,7 @@ public class Command {
     public static final byte LOGIN = 2;
     public static final byte SAVE_PROFILE = 3;
     public static final byte LOAD_PROFILE = 4;
+    public static final byte GET_TOKEN = 5;
 
     public static final byte DIGITAL_WRITE = 10;
     public static final byte DIGITAL_READ = 11;

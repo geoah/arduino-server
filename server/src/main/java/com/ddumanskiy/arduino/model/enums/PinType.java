@@ -7,6 +7,7 @@ package com.ddumanskiy.arduino.model.enums;
  */
 public enum PinType {
 
+    NONE,
     DIGITAL,
     VIRTUAL,
     ANALOG
