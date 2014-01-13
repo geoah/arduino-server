@@ -2,7 +2,6 @@ package com.ddumanskiy.arduino.server.handlers;
 
 import com.ddumanskiy.arduino.auth.Session;
 import com.ddumanskiy.arduino.auth.User;
-import com.ddumanskiy.arduino.common.Command;
 import com.ddumanskiy.arduino.common.message.Message;
 import com.ddumanskiy.arduino.server.GroupHolder;
 import com.ddumanskiy.arduino.server.handlers.enums.ChannelType;
@@ -11,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 
+import static com.ddumanskiy.arduino.common.Command.*;
 import static com.ddumanskiy.arduino.server.response.ResponseCode.*;
 
 /**
@@ -23,14 +23,14 @@ public class ArduinoCommandsHandler extends BaseSimpleChannelHandler {
     private static final Logger log = LogManager.getLogger(ArduinoCommandsHandler.class);
 
     private static final byte[] ALLOWED_COMMANDS = new byte[] {
-            Command.DIGITAL_WRITE,
-            Command.DIGITAL_READ,
-            Command.ANALOG_READ,
-            Command.ANALOG_WRITE,
-            Command.VIRTUAL_READ,
-            Command.VIRTUAL_WRITE,
-            Command.RESET,
-            Command.RESET_ALL
+            DIGITAL_WRITE,
+            DIGITAL_READ,
+            ANALOG_READ,
+            ANALOG_WRITE,
+            VIRTUAL_READ,
+            VIRTUAL_WRITE,
+            RESET,
+            RESET_ALL
     };
 
     @Override

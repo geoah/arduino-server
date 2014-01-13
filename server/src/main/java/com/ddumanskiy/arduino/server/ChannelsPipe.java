@@ -36,6 +36,7 @@ public class ChannelsPipe implements ChannelPipelineFactory {
                 new GetTokenHandler(),
                 new SaveProfileHandler(),
                 new LoadProfileHandler(),
+                new GraphCommandsHandler(),
                 new ArduinoCommandsHandler()
         );
     }
