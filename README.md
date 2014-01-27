@@ -44,7 +44,7 @@ This is 1 byte field responsible for storing code of requested from [client comm
             b) For arduino client must have 1 param, user token : "6a7a3151cb044cd893a92033dd65f655"
         3 - save profile; Must have 1 param as content string : "{...}"
         4 - load profile; Don't have any params
-        5 - get token; Must have 1 int param, dash board id : "1"
+        5 - getToken; Must have 1 int param, dash board id : "1"
         
 #### Arduino client command codes
 
