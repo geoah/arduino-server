@@ -102,25 +102,34 @@ Response object -
 	//pin reading widgets
 	LED					: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"LED",            "pinType":"DIGITAL", "pin":10} - sends READ pin to server
 	Digit Display		: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"DIGIT4_DISPLAY", "pinType":"DIGITAL", "pin":10} - sends READ pin to server
-	Graph				: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"GRAPH",          "pinType":"DIGITAL", "pin":10, "readingFrequency":1000} - sends READ pin to server
+	Graph				: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"GRAPH",          "pinType":"DIGITAL", "pin":10, "readingFrequency":1000} - sends READ pin to server. Frequency in microseconds
 
-## START
+## GETTING STARTED
 
-For server launch:
-java -jar server.jar 8080
+1. Run the server
+	java -jar server.jar 8080
 
-For client 1 launch
-java -jar client.jar localhost 8080
+2. Run the client (simulates smartphone client)		
+	java -jar client.jar localhost 8080
 
-For client 2 launch
-java -jar client.jar localhost 8080
+3. In this client: register new user and login with the same credentials
+	register yourEmail yourPassword
+	login yourEmail yourPassword
+
+4. Get the token for Arduino
+	gettoken 1
+	You will get smth. like this:
+	00:05:18.086 INFO  - Sending : Message{messageId=30825, command=5, body='1'}
+	00:05:18.100 INFO  - Getting : Message{messageId=30825, command=5,body='33bcbe756b994a6768494d55d1543c74'}
+
+5. Start another client (simulates Arduino) and use received token to login
+ 	java -jar client.jar localhost 8080
+	login 33bcbe756b994a6768494d55d1543c74
 
 You can run as many clients as you want.
 
-First command for client 1 should be "register pupkin@mail.ua pupkin_pass". When registering, email is send to provided login name with code snippet required for start (or you can have a look in server logs and can find generated login token for arduino).
-Next command is for client 2 "login 6a7a3151cb044cd893a92033dd65f655". Where "6a7a3151cb044cd893a92033dd65f655" is login token genarated for pupkin@mail.ua username.
-
-Now you are ready to send messages between both clients. All client commands are human-flriendly, so you don't have to remember codes, for isntance :
+6. Clients with same credentials and token will be grouped within one room/group. And can send messages to each other.
+All client commands are human-flriendly, so you don't have to remember codes. Examples:
 "digitalWrite 1 1"
 "digitalRead 1"
 "analogWrite 1 1"
@@ -128,6 +137,5 @@ Now you are ready to send messages between both clients. All client commands are
 "virtualWrite 1 1"
 "virtualRead 1"
 
-Clients with same username token will be grouped within one room/group. And can send messages to each other.
 
 Registered users are stored locally in TMP dir of your system in file "user.db". So after restart you don't have to register again.
