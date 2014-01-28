@@ -121,6 +121,7 @@ Response object -
 	You will get smth. like this:
 	00:05:18.086 INFO  - Sending : Message{messageId=30825, command=5, body='1'}
 	00:05:18.100 INFO  - Getting : Message{messageId=30825, command=5,body='33bcbe756b994a6768494d55d1543c74'}
+Where 33bcbe756b994a6768494d55d1543c74 is your token.
 
 5. Start another client (simulates Arduino) and use received token to login
  	java -jar client.jar localhost 8080
