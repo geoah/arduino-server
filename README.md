@@ -106,37 +106,44 @@ Response object -
 
 ## GETTING STARTED
 
-1. Run the server
-	java -jar server.jar 8080
++ Run the server
 
-2. Run the client (simulates smartphone client)		
-	java -jar client.jar localhost 8080
+        java -jar server.jar 8080
++ Run the client (simulates smartphone client)
 
-3. In this client: register new user and login with the same credentials
-	register yourEmail yourPassword
-	login yourEmail yourPassword
+        java -jar client.jar localhost 8080
 
-4. Get the token for Arduino
-	gettoken 1
-	You will get smth. like this:
-	00:05:18.086 INFO  - Sending : Message{messageId=30825, command=5, body='1'}
-	00:05:18.100 INFO  - Getting : Message{messageId=30825, command=5,body='33bcbe756b994a6768494d55d1543c74'}
-Where 33bcbe756b994a6768494d55d1543c74 is your token.
++ In this client: register new user and/or login with the same credentials
 
-5. Start another client (simulates Arduino) and use received token to login
- 	java -jar client.jar localhost 8080
-	login 33bcbe756b994a6768494d55d1543c74
+        register your@email.com yourPassword
+        login your@email.com yourPassword
+
++ Get the token for Arduino
+
+        getToken 1
+
+   	You will get server response similar to this one:
+
+    	00:05:18.086 INFO  - Sending : Message{messageId=30825, command=5, body='1'}
+    	00:05:18.100 INFO  - Getting : Message{messageId=30825, command=5,body='33bcbe756b994a6768494d55d1543c74'}
+Where `33bcbe756b994a6768494d55d1543c74` is your token.
+
++ Start another client (simulates Arduino) and use received token to login
+
+    	java -jar client.jar localhost 8080
+    	login 33bcbe756b994a6768494d55d1543c74
+   
 
 You can run as many clients as you want.
 
-6. Clients with same credentials and token will be grouped within one room/group. And can send messages to each other.
+Clients with same credentials and token are grouped within one chat room/group and can send messages to each other.
 All client commands are human-flriendly, so you don't have to remember codes. Examples:
-"digitalWrite 1 1"
-"digitalRead 1"
-"analogWrite 1 1"
-"analogRead 1"
-"virtualWrite 1 1"
-"virtualRead 1"
 
+    	digitalWrite 1 1
+    	digitalRead 1
+    	analogWrite 1 1
+    	analogRead 1
+    	virtualWrite 1 1
+    	virtualRead 1
 
 Registered users are stored locally in TMP dir of your system in file "user.db". So after restart you don't have to register again.
