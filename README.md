@@ -52,7 +52,7 @@ This is 1 byte field responsible for storing code of requested from [client comm
             b) For arduino client must have 1 param, user token : "6a7a3151cb044cd893a92033dd65f655"
         3 - save profile; Must have 1 param as content string : "{...}"
         4 - load profile; Don't have any params
-        5 - get token; Must have 1 int param, dash board id : "1"
+        5 - getToken; Must have 1 int param, dash board id : "1"
         7 - graph get (not finished)
         8 - graph load (not finished)
 
@@ -141,32 +141,48 @@ Response message structure:
 	//pin reading widgets
 	LED					: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"LED",            "pinType":"DIGITAL", "pin":10} - sends READ pin to server
 	Digit Display		: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"DIGIT4_DISPLAY", "pinType":"DIGITAL", "pin":10} - sends READ pin to server
-	Graph				: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"GRAPH",          "pinType":"DIGITAL", "pin":10, "readingFrequency":1000} - sends READ pin to server
+	Graph				: {"id":1, "x":1, "y":1, "dashBoardId":1, "label":"Some Text", "type":"GRAPH",          "pinType":"DIGITAL", "pin":10, "readingFrequency":1000} - sends READ pin to server. Frequency in microseconds
 
-## START
+## GETTING STARTED
 
-For server launch:
-java -jar server.jar 8080
++ Run the server
 
-For client 1 launch
-java -jar client.jar localhost 8080
+        java -jar server.jar 8080
++ Run the client (simulates smartphone client)
 
-For client 2 launch
-java -jar client.jar localhost 8080
+        java -jar client.jar localhost 8080
+
++ In this client: register new user and/or login with the same credentials
+
+        register your@email.com yourPassword
+        login your@email.com yourPassword
+
++ Get the token for Arduino
+
+        getToken 1
+
+   	You will get server response similar to this one:
+
+    	00:05:18.086 INFO  - Sending : Message{messageId=30825, command=5, body='1'}
+    	00:05:18.100 INFO  - Getting : Message{messageId=30825, command=5,body='33bcbe756b994a6768494d55d1543c74'}
+Where `33bcbe756b994a6768494d55d1543c74` is your token.
+
++ Start another client (simulates Arduino) and use received token to login
+
+    	java -jar client.jar localhost 8080
+    	login 33bcbe756b994a6768494d55d1543c74
+   
 
 You can run as many clients as you want.
 
-First command for client 1 should be "register pupkin@mail.ua pupkin_pass". When registering, email is send to provided login name with code snippet required for start (or you can have a look in server logs and can find generated login token for arduino).
-Next command is for client 2 "login 6a7a3151cb044cd893a92033dd65f655". Where "6a7a3151cb044cd893a92033dd65f655" is login token genarated for pupkin@mail.ua username.
+Clients with same credentials and token are grouped within one chat room/group and can send messages to each other.
+All client commands are human-flriendly, so you don't have to remember codes. Examples:
 
-Now you are ready to send messages between both clients. All client commands are human-flriendly, so you don't have to remember codes, for isntance :
-"digitalWrite 1 1"
-"digitalRead 1"
-"analogWrite 1 1"
-"analogRead 1"
-"virtualWrite 1 1"
-"virtualRead 1"
-
-Clients with same username token will be grouped within one room/group. And can send messages to each other.
+    	digitalWrite 1 1
+    	digitalRead 1
+    	analogWrite 1 1
+    	analogRead 1
+    	virtualWrite 1 1
+    	virtualRead 1
 
 Registered users are stored locally in TMP dir of your system in file "user.db". So after restart you don't have to register again.
