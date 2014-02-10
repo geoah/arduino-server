@@ -1,5 +1,7 @@
 package com.blynk.arduino.common.message;
 
+import com.blynk.arduino.common.enums.Command;
+
 /**
  * User: ddumanskiy
  * Date: 07.12.13
@@ -35,6 +37,6 @@ public abstract class Message {
     @Override
     public String toString() {
         return "messageId=" + messageId +
-                ", command=" + command;
+                ", command=" + Command.getByCode(command);
     }
 }

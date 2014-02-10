@@ -2,7 +2,7 @@ package com.blynk.arduino.server.handlers;
 
 
 import com.blynk.arduino.auth.UserRegistry;
-import com.blynk.arduino.common.Command;
+import com.blynk.arduino.common.enums.Command;
 import com.blynk.arduino.common.enums.Response;
 import com.blynk.arduino.common.message.MobileClientMessage;
 import com.blynk.arduino.common.message.ResponseMessage;
@@ -12,6 +12,8 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
+
+import static com.blynk.arduino.common.enums.Command.REGISTER;
 
 /**
  * Get input message. Checks if it is a register command.
@@ -29,12 +31,12 @@ public class RegisterHandler extends BaseSimpleChannelHandler {
 
     private static final Logger log = LogManager.getLogger(RegisterHandler.class);
 
-    private static final byte[] ALLOWED_COMMANDS = new byte[] {
-            Command.REGISTER,
+    private static final Command[] ALLOWED_COMMANDS = new Command[] {
+            REGISTER,
     };
 
     @Override
-    protected byte[] getHandlerCommands() {
+    protected Command[] getHandlerCommands() {
         return ALLOWED_COMMANDS;
     }
 

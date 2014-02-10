@@ -1,10 +1,10 @@
 package com.blynk.arduino.common.utils;
 
-import com.blynk.arduino.common.Command;
+import com.blynk.arduino.common.enums.Command;
 
 import java.nio.charset.Charset;
 
-import static com.blynk.arduino.common.Command.*;
+import static com.blynk.arduino.common.enums.Command.*;
 
 /**
  * User: ddumanskiy
@@ -25,8 +25,9 @@ public abstract class Utils {
     }
 
     public static boolean isArduinoCommand(byte inputCommand) {
-        for (byte arduinoCommand : ARDUINO_COMMANDS) {
-            if (inputCommand == arduinoCommand) {
+        Command inputCommandEnum = Command.getByCode(inputCommand);
+        for (Command arduinoCommand : ARDUINO_COMMANDS) {
+            if (inputCommandEnum == arduinoCommand) {
                 return true;
             }
         }
@@ -34,10 +35,10 @@ public abstract class Utils {
     }
 
     public static boolean isResponseCommand(byte inputCommand) {
-        return inputCommand == Command.RESPONSE;
+        return inputCommand == RESPONSE.getCode();
     }
 
-    private static final byte[] ARDUINO_COMMANDS = new byte[] {
+    private static final Command[] ARDUINO_COMMANDS = new Command[] {
             DIGITAL_WRITE,
             DIGITAL_READ,
             ANALOG_READ,

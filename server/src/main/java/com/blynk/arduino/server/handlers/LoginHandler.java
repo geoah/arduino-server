@@ -4,7 +4,7 @@ package com.blynk.arduino.server.handlers;
 import com.blynk.arduino.auth.Session;
 import com.blynk.arduino.auth.User;
 import com.blynk.arduino.auth.UserRegistry;
-import com.blynk.arduino.common.Command;
+import com.blynk.arduino.common.enums.Command;
 import com.blynk.arduino.common.enums.Response;
 import com.blynk.arduino.common.message.Message;
 import com.blynk.arduino.common.message.MobileClientMessage;
@@ -17,6 +17,7 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 
+import static com.blynk.arduino.common.enums.Command.LOGIN;
 import static com.blynk.arduino.utils.ChannelsUtils.isArduinoChannel;
 
 /**
@@ -28,12 +29,12 @@ public class LoginHandler extends BaseSimpleChannelHandler {
 
     private static final Logger log = LogManager.getLogger(LoginHandler.class);
 
-    private static final byte[] ALLOWED_COMMANDS = new byte[] {
-            Command.LOGIN,
+    private static final Command[] ALLOWED_COMMANDS = new Command[] {
+            LOGIN,
     };
 
     @Override
-    protected byte[] getHandlerCommands() {
+    protected Command[] getHandlerCommands() {
         return ALLOWED_COMMANDS;
     }
 

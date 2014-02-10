@@ -3,7 +3,7 @@ package com.blynk.arduino.server.handlers;
 
 import com.blynk.arduino.auth.Session;
 import com.blynk.arduino.auth.User;
-import com.blynk.arduino.common.Command;
+import com.blynk.arduino.common.enums.Command;
 import com.blynk.arduino.common.enums.Response;
 import com.blynk.arduino.common.message.MobileClientMessage;
 import com.blynk.arduino.common.message.ResponseMessage;
@@ -15,6 +15,9 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 
+import static com.blynk.arduino.common.enums.Command.GRAPH_GET;
+import static com.blynk.arduino.common.enums.Command.GRAPH_LOAD;
+
 /**
  * User: ddumanskiy
  * Date: 11/6/13
@@ -24,13 +27,13 @@ public class GraphCommandsHandler extends BaseSimpleChannelHandler {
 
     private static final Logger log = LogManager.getLogger(GraphCommandsHandler.class);
 
-    private static final byte[] ALLOWED_COMMANDS = new byte[] {
-            Command.GRAPH_GET,
-            Command.GRAPH_LOAD
+    private static final Command[] ALLOWED_COMMANDS = new Command[] {
+            GRAPH_GET,
+            GRAPH_LOAD
     };
 
     @Override
-    protected byte[] getHandlerCommands() {
+    protected Command[] getHandlerCommands() {
         return ALLOWED_COMMANDS;
     }
 
@@ -58,7 +61,7 @@ public class GraphCommandsHandler extends BaseSimpleChannelHandler {
 
         User authUser = Session.getChannelToken().get(incomeChannel.getId());
 
-        if (message.getCommand() == Command.GRAPH_GET) {
+        if (message.getCommand() == GRAPH_GET.getCode()) {
             Long ts = null;
             try {
                 //todo not used for now, finish.

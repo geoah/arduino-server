@@ -2,7 +2,7 @@ package com.blynk.arduino.server.handlers;
 
 import com.blynk.arduino.auth.User;
 import com.blynk.arduino.auth.UserRegistry;
-import com.blynk.arduino.common.Command;
+import com.blynk.arduino.common.enums.Command;
 import com.blynk.arduino.common.enums.Response;
 import com.blynk.arduino.common.message.MobileClientMessage;
 import com.blynk.arduino.common.message.ResponseMessage;
@@ -15,6 +15,8 @@ import org.jboss.netty.channel.MessageEvent;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static com.blynk.arduino.common.enums.Command.LOGIN;
 
 /**
  * Used before login in order to validate pass and brute force basic def.
@@ -29,12 +31,12 @@ public class PasswordHandler extends BaseSimpleChannelHandler {
 
     private static final Map<String, Integer> brutterDefence = new ConcurrentHashMap<>();
 
-    private static final byte[] ALLOWED_COMMANDS = new byte[] {
-            Command.LOGIN,
+    private static final Command[] ALLOWED_COMMANDS = new Command[] {
+            LOGIN,
     };
 
     @Override
-    protected byte[] getHandlerCommands() {
+    protected Command[] getHandlerCommands() {
         return ALLOWED_COMMANDS;
     }
 

@@ -1,8 +1,8 @@
 package com.blynk.arduino.client;
 
-import com.blynk.arduino.common.Command;
 import com.blynk.arduino.common.decoders.MessageIdAndCommand3BytesDecoder;
 import com.blynk.arduino.common.encoders.MessageIdAndCommand3BytesEncoder;
+import com.blynk.arduino.common.enums.Command;
 import com.blynk.arduino.common.message.ArduinoMessage;
 import com.blynk.arduino.common.message.MobileClientMessage;
 import com.blynk.arduino.common.utils.Utils;
@@ -103,7 +103,7 @@ public class Client {
             byte command;
 
             try {
-                command = getCommand(input[0]);
+                command = Command.getByName(input[0]).getCode();
             } catch (IllegalArgumentException e) {
                 log.error(e);
                 continue;
@@ -119,50 +119,6 @@ public class Client {
                 serverChannel.write(new MobileClientMessage((short)random.nextInt(Short.MAX_VALUE), command, body));
             }
         }
-    }
-
-    private static byte getCommand(String commandWord) {
-        if ("register".equalsIgnoreCase(commandWord)) {
-            return Command.REGISTER;
-        }
-        if ("login".equalsIgnoreCase(commandWord)) {
-            return Command.LOGIN;
-        }
-        if ("loadProfile".equalsIgnoreCase(commandWord)) {
-            return Command.LOAD_PROFILE;
-        }
-        if ("saveProfile".equalsIgnoreCase(commandWord)) {
-            return Command.SAVE_PROFILE;
-        }
-        if ("digitalWrite".equalsIgnoreCase(commandWord)) {
-            return Command.DIGITAL_WRITE;
-        }
-        if ("digitalRead".equalsIgnoreCase(commandWord)) {
-            return Command.DIGITAL_READ;
-        }
-        if ("analogWrite".equalsIgnoreCase(commandWord)) {
-            return Command.ANALOG_WRITE;
-        }
-        if ("analogRead".equalsIgnoreCase(commandWord)) {
-            return Command.ANALOG_READ;
-        }
-        if ("virtualWrite".equalsIgnoreCase(commandWord)) {
-            return Command.VIRTUAL_WRITE;
-        }
-        if ("virtualRead".equalsIgnoreCase(commandWord)) {
-            return Command.VIRTUAL_READ;
-        }
-        if ("reset".equalsIgnoreCase(commandWord)) {
-            return Command.RESET;
-        }
-        if ("resetAll".equalsIgnoreCase(commandWord)) {
-            return Command.RESET_ALL;
-        }
-        if ("getToken".equalsIgnoreCase(commandWord)) {
-            return Command.GET_TOKEN;
-        }
-
-        throw new IllegalArgumentException("Wrong command " + commandWord);
     }
 
 }

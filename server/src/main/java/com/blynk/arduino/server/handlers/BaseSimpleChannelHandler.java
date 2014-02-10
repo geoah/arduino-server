@@ -1,5 +1,6 @@
 package com.blynk.arduino.server.handlers;
 
+import com.blynk.arduino.common.enums.Command;
 import com.blynk.arduino.common.message.Message;
 import org.jboss.netty.channel.SimpleChannelHandler;
 
@@ -10,15 +11,16 @@ import org.jboss.netty.channel.SimpleChannelHandler;
  */
 public abstract class BaseSimpleChannelHandler extends SimpleChannelHandler {
 
-    protected abstract byte[] getHandlerCommands();
+    protected abstract Command[] getHandlerCommands();
 
     protected boolean isHandlerCommand(Object msg) {
         return isHandlerCommand(((Message) msg).getCommand());
     }
 
     protected boolean isHandlerCommand(byte inputCommand) {
-        for (byte allowedCommand : getHandlerCommands()) {
-            if (inputCommand == allowedCommand) {
+        Command inputCommandEnum = Command.getByCode(inputCommand);
+        for (Command allowedCommand : getHandlerCommands()) {
+            if (inputCommandEnum == allowedCommand) {
                 return true;
             }
         }

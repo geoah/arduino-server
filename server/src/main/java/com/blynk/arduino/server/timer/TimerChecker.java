@@ -2,7 +2,6 @@ package com.blynk.arduino.server.timer;
 
 import com.blynk.arduino.auth.TimerRegistry;
 import com.blynk.arduino.auth.User;
-import com.blynk.arduino.common.Command;
 import com.blynk.arduino.common.message.MobileClientMessage;
 import com.blynk.arduino.model.Widget;
 import com.blynk.arduino.model.enums.PinType;
@@ -19,6 +18,8 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import static com.blynk.arduino.common.enums.Command.*;
 
 /**
  * Used to check timer widgets among all users.
@@ -101,11 +102,11 @@ public class TimerChecker implements Runnable {
             if (ChannelsUtils.isArduinoChannel(outChannel)) {
                 byte command;
                 if (timer.getPinType() == PinType.ANALOG) {
-                    command = Command.ANALOG_WRITE;
+                    command = ANALOG_WRITE.getCode();
                 } else if (timer.getPinType() == PinType.DIGITAL) {
-                    command = Command.DIGITAL_WRITE;
+                    command = DIGITAL_WRITE.getCode();
                 } else {
-                    command = Command.VIRTUAL_WRITE;
+                    command = VIRTUAL_WRITE.getCode();
                 }
 
                 MobileClientMessage message = new MobileClientMessage((short)0, command, String.valueOf(timer.getPin()) + value);

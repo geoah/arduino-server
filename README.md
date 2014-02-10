@@ -42,7 +42,7 @@ After you reconfigured graph1 to read another pin, load command will still look 
 IMPORTANT : ZERO VALUE FOR MESSAGE ID IS RESERVED AND SHOULDN'T BE USED BY CLIENTS.
 
 ### Command field
-This is 1 byte field responsible for storing code of requested from [client command](https://github.com/doom369/arduino-server/blob/master/common/src/main/java/com/ddumanskiy/arduino/common/Command.java), like login, digitalWrite, etc...
+This is 1 byte field responsible for storing code of requested from [client command](https://github.com/doom369/arduino-server/blob/master/common/src/main/java/com/ddumanskiy/arduino/common/enums/Command.java), like login, digitalWrite, etc...
 
 #### Mobile client command codes
 

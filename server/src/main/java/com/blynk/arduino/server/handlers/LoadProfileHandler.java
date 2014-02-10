@@ -3,13 +3,15 @@ package com.blynk.arduino.server.handlers;
 
 import com.blynk.arduino.auth.Session;
 import com.blynk.arduino.auth.User;
-import com.blynk.arduino.common.Command;
+import com.blynk.arduino.common.enums.Command;
 import com.blynk.arduino.common.message.MobileClientMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
+
+import static com.blynk.arduino.common.enums.Command.LOAD_PROFILE;
 
 /**
  * User: ddumanskiy
@@ -20,12 +22,12 @@ public class LoadProfileHandler extends BaseSimpleChannelHandler {
 
     private static final Logger log = LogManager.getLogger(LoadProfileHandler.class);
 
-    private static final byte[] ALLOWED_COMMANDS = new byte[] {
-            Command.LOAD_PROFILE,
+    private static final Command[] ALLOWED_COMMANDS = new Command[] {
+            LOAD_PROFILE,
     };
 
     @Override
-    protected byte[] getHandlerCommands() {
+    protected Command[] getHandlerCommands() {
         return ALLOWED_COMMANDS;
     }
 

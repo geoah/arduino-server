@@ -1,7 +1,8 @@
 package com.blynk.arduino.common.message;
 
-import com.blynk.arduino.common.Command;
 import com.blynk.arduino.common.enums.Response;
+
+import static com.blynk.arduino.common.enums.Command.RESPONSE;
 
 /**
  * User: ddumanskiy
@@ -17,12 +18,12 @@ public class ResponseMessage extends Message {
     }
 
     public ResponseMessage(Message msg, Response code) {
-        super(msg.getMessageId(), Command.RESPONSE);
+        super(msg.getMessageId(), RESPONSE.getCode());
         this.code = code.getCode();
     }
 
     public ResponseMessage(short messageId, byte code) {
-        super(messageId, Command.RESPONSE);
+        super(messageId, RESPONSE.getCode());
         this.code = code;
     }
 
