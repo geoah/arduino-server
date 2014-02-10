@@ -3,15 +3,15 @@ package com.ddumanskiy.arduino.server.handlers;
 
 import com.ddumanskiy.arduino.auth.UserRegistry;
 import com.ddumanskiy.arduino.common.Command;
-import com.ddumanskiy.arduino.common.message.Message;
+import com.ddumanskiy.arduino.common.enums.Response;
+import com.ddumanskiy.arduino.common.message.MobileClientMessage;
+import com.ddumanskiy.arduino.common.message.ResponseMessage;
 import com.ddumanskiy.arduino.mail.EMailValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
-
-import static com.ddumanskiy.arduino.server.response.ResponseCode.*;
 
 /**
  * Get input message. Checks if it is a register command.
@@ -42,21 +42,22 @@ public class RegisterHandler extends BaseSimpleChannelHandler {
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
         Channel incomeChannel = e.getChannel();
-        Message message = (Message) e.getMessage();
-
-        String[] messageParts = message.getBody().split(" ", 2);
 
         //if this is register message (register pupkin@mail.ru hashed_pass)
-        if (!isHandlerCommand(message.getCommand())) {
+        if (!isHandlerCommand(e.getMessage())) {
             ctx.sendUpstream(e);
             return;
         }
 
+        MobileClientMessage message = (MobileClientMessage) e.getMessage();
+
+        String[] messageParts = message.getBody().split(" ", 2);
+
+
         //expecting message with 2 parts, described above in comment.
         if (messageParts.length != 2) {
             log.error("Register Handler. Wrong income message format.");
-            message.setBody(INVALID_COMMAND_FORMAT);
-            incomeChannel.write(message);
+            incomeChannel.write(new ResponseMessage(message, Response.INVALID_COMMAND_FORMAT));
             return;
         }
 
@@ -67,24 +68,21 @@ public class RegisterHandler extends BaseSimpleChannelHandler {
 
         if (!EMailValidator.isValid(userName)) {
             log.error("Register Handler. Wrong email: {}", userName);
-            message.setBody(INVALID_COMMAND_FORMAT);
-            incomeChannel.write(message);
+            incomeChannel.write(new ResponseMessage(message, Response.INVALID_COMMAND_FORMAT));
             return;
         }
 
         if (UserRegistry.isUserExists(userName)) {
-            log.error("User with name {} already exists.", userName);
-            message.setBody(USER_ALREADY_REGISTERED);
-            incomeChannel.write(message);
+            log.warn("User with name {} already exists.", userName);
+            incomeChannel.write(new ResponseMessage(message, Response.USER_ALREADY_REGISTERED));
             return;
         }
 
-        log.info("Registering {}.", userName);
-
         UserRegistry.createNewUser(userName, pass);
 
-        message.setBody(OK);
-        incomeChannel.write(message);
+        log.info("Registered {}.", userName);
+
+        incomeChannel.write(new ResponseMessage(message, Response.OK));
     }
 
 }

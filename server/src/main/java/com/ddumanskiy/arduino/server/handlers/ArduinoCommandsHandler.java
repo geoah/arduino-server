@@ -2,7 +2,9 @@ package com.ddumanskiy.arduino.server.handlers;
 
 import com.ddumanskiy.arduino.auth.Session;
 import com.ddumanskiy.arduino.auth.User;
+import com.ddumanskiy.arduino.common.enums.Response;
 import com.ddumanskiy.arduino.common.message.Message;
+import com.ddumanskiy.arduino.common.message.ResponseMessage;
 import com.ddumanskiy.arduino.server.GroupHolder;
 import com.ddumanskiy.arduino.server.handlers.enums.ChannelType;
 import org.apache.logging.log4j.LogManager;
@@ -11,7 +13,8 @@ import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 
 import static com.ddumanskiy.arduino.common.Command.*;
-import static com.ddumanskiy.arduino.server.response.ResponseCode.*;
+import static com.ddumanskiy.arduino.utils.ChannelsUtils.isArduinoChannel;
+import static com.ddumanskiy.arduino.utils.ChannelsUtils.isMobileChannel;
 
 /**
  * User: ddumanskiy
@@ -45,8 +48,7 @@ public class ArduinoCommandsHandler extends BaseSimpleChannelHandler {
 
         if (!isHandlerCommand(message.getCommand())) {
             log.error("Command not supported - {}.", message.getCommand());
-            message.setBody(NOT_SUPPORTED_COMMAND);
-            incomeChannel.write(message);
+            incomeChannel.write(new ResponseMessage(message, Response.NOT_SUPPORTED_COMMAND));
             return;
         }
 
@@ -56,8 +58,7 @@ public class ArduinoCommandsHandler extends BaseSimpleChannelHandler {
         DefaultChannelGroup group = GroupHolder.getPrivateRooms().get(authUser);
 
         if (group.size() == 1) {
-            message.setBody(DEVICE_NOT_IN_NETWORK);
-            incomeChannel.write(message);
+            incomeChannel.write(new ResponseMessage(message, Response.DEVICE_NOT_IN_NETWORK));
             return;
         }
 
@@ -71,8 +72,7 @@ public class ArduinoCommandsHandler extends BaseSimpleChannelHandler {
                 future.addListener(new ChannelFutureListener() {
                     public void operationComplete(ChannelFuture future) {
                         //todo new message
-                        message.setBody(OK);
-                        incomeChannel.write(message);
+                        incomeChannel.write(new ResponseMessage(message, Response.OK));
                     }
                 });
             }
@@ -96,11 +96,5 @@ public class ArduinoCommandsHandler extends BaseSimpleChannelHandler {
 
     }
 
-    public static boolean isArduinoChannel(Channel channel) {
-        return channel.getAttachment() != null && (channel.getAttachment() == ChannelType.ARDUINO);
-    }
 
-    public static boolean isMobileChannel(Channel channel) {
-        return channel.getAttachment() == null || (channel.getAttachment() == ChannelType.MOBILE_CLIENT);
-    }
 }

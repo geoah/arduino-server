@@ -3,7 +3,7 @@ package com.ddumanskiy.arduino.server.timer;
 import com.ddumanskiy.arduino.auth.TimerRegistry;
 import com.ddumanskiy.arduino.auth.User;
 import com.ddumanskiy.arduino.common.Command;
-import com.ddumanskiy.arduino.common.message.Message;
+import com.ddumanskiy.arduino.common.message.MobileClientMessage;
 import com.ddumanskiy.arduino.model.Widget;
 import com.ddumanskiy.arduino.model.enums.PinType;
 import com.ddumanskiy.arduino.server.GroupHolder;
@@ -108,7 +108,7 @@ public class TimerChecker implements Runnable {
                     command = Command.VIRTUAL_WRITE;
                 }
 
-                Message message = new Message((short)0, command, String.valueOf(timer.getPin()) + value);
+                MobileClientMessage message = new MobileClientMessage((short)0, command, String.valueOf(timer.getPin()) + value);
                 return new DownstreamMessageEvent(outChannel, Channels.future(outChannel), message, null);
             }
         }

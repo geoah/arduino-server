@@ -5,9 +5,11 @@ import com.ddumanskiy.arduino.auth.Session;
 import com.ddumanskiy.arduino.auth.User;
 import com.ddumanskiy.arduino.auth.UserRegistry;
 import com.ddumanskiy.arduino.common.Command;
+import com.ddumanskiy.arduino.common.enums.Response;
 import com.ddumanskiy.arduino.common.message.Message;
+import com.ddumanskiy.arduino.common.message.MobileClientMessage;
+import com.ddumanskiy.arduino.common.message.ResponseMessage;
 import com.ddumanskiy.arduino.server.GroupHolder;
-import com.ddumanskiy.arduino.server.response.ResponseCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.Channel;
@@ -15,8 +17,7 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 
-import static com.ddumanskiy.arduino.server.response.ResponseCode.OK;
-import static com.ddumanskiy.arduino.server.response.ResponseCode.USER_NOT_REGISTERED;
+import static com.ddumanskiy.arduino.utils.ChannelsUtils.isArduinoChannel;
 
 /**
  * User: ddumanskiy
@@ -39,16 +40,12 @@ public class LoginHandler extends BaseSimpleChannelHandler {
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
         Channel incomeChannel = e.getChannel();
-        Message message = (Message) e.getMessage();
 
-        String[] messageParts = message.getBody().split(" ", 2);
-
-        if (!isHandlerCommand(message.getCommand())) {
+        if (!isHandlerCommand(e.getMessage())) {
             User authUser = Session.getChannelToken().get(incomeChannel.getId());
             if (authUser == null) {
                 log.error("Channel not authorized. Send login first.");
-                message.setBody(ResponseCode.USER_NOT_AUTHENTICATED);
-                incomeChannel.write(message);
+                incomeChannel.write(new ResponseMessage((Message) e.getMessage(), Response.USER_NOT_AUTHENTICATED));
                 return;
             }
 
@@ -56,13 +53,16 @@ public class LoginHandler extends BaseSimpleChannelHandler {
             return;
         }
 
+        MobileClientMessage message = (MobileClientMessage) e.getMessage();
+        String[] messageParts = message.getBody().split(" ", 2);
+
+
         String userName = messageParts[0].toLowerCase();
-        log.info("User : {}", userName);
+        log.info("User {} trying to login. Client type : {}", userName, isArduinoChannel(incomeChannel) ? "Arduino" : "Mobile");
 
         if (!UserRegistry.isUserExists(userName)) {
             log.error("User {} not registered.", userName);
-            message.setBody(USER_NOT_REGISTERED);
-            incomeChannel.write(message);
+            incomeChannel.write(new ResponseMessage(message, Response.USER_NOT_REGISTERED));
             return;
         }
 
@@ -84,8 +84,7 @@ public class LoginHandler extends BaseSimpleChannelHandler {
             log.info("Adding channel with id {} to userGroup {}.", incomeChannel.getId(), user.getName());
         }
 
-        message.setBody(OK);
-        incomeChannel.write(message);
+        incomeChannel.write(new ResponseMessage(message, Response.OK));
     }
 
 }

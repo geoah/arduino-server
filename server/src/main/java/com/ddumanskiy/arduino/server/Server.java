@@ -1,6 +1,6 @@
 package com.ddumanskiy.arduino.server;
 
-import com.ddumanskiy.arduino.common.Utils;
+import com.ddumanskiy.arduino.common.utils.Utils;
 import com.ddumanskiy.arduino.server.timer.TimerChecker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

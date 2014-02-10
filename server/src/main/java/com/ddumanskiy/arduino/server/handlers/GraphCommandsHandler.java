@@ -4,7 +4,9 @@ package com.ddumanskiy.arduino.server.handlers;
 import com.ddumanskiy.arduino.auth.Session;
 import com.ddumanskiy.arduino.auth.User;
 import com.ddumanskiy.arduino.common.Command;
-import com.ddumanskiy.arduino.common.message.Message;
+import com.ddumanskiy.arduino.common.enums.Response;
+import com.ddumanskiy.arduino.common.message.MobileClientMessage;
+import com.ddumanskiy.arduino.common.message.ResponseMessage;
 import com.ddumanskiy.arduino.graph.GraphDataStorage;
 import com.ddumanskiy.arduino.utils.JsonParser;
 import org.apache.logging.log4j.LogManager;
@@ -12,8 +14,6 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
-
-import static com.ddumanskiy.arduino.server.response.ResponseCode.INVALID_COMMAND_FORMAT;
 
 /**
  * User: ddumanskiy
@@ -37,19 +37,19 @@ public class GraphCommandsHandler extends BaseSimpleChannelHandler {
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
         Channel incomeChannel = e.getChannel();
-        Message message = (Message) e.getMessage();
 
-        if (!isHandlerCommand(message.getCommand())) {
+        if (!isHandlerCommand(e.getMessage())) {
             ctx.sendUpstream(e);
             return;
         }
+
+        MobileClientMessage message = (MobileClientMessage) e.getMessage();
 
         String[] messageParts = message.getBody().split(" ", 2);
 
         if (messageParts.length != 2) {
             log.error("Wrong command format {}.", message.getBody());
-            message.setBody(INVALID_COMMAND_FORMAT);
-            incomeChannel.write(message);
+            incomeChannel.write(new ResponseMessage(message, Response.INVALID_COMMAND_FORMAT));
             return;
         }
 
@@ -65,8 +65,7 @@ public class GraphCommandsHandler extends BaseSimpleChannelHandler {
                 ts = Long.parseLong(stringTS);
             } catch (NumberFormatException ex) {
                 log.error("Timestamp {} not valid.", stringTS);
-                message.setBody(INVALID_COMMAND_FORMAT);
-                incomeChannel.write(message);
+                incomeChannel.write(new ResponseMessage(message, Response.INVALID_COMMAND_FORMAT));
                 return;
             }
 

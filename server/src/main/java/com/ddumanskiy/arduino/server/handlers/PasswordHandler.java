@@ -3,7 +3,9 @@ package com.ddumanskiy.arduino.server.handlers;
 import com.ddumanskiy.arduino.auth.User;
 import com.ddumanskiy.arduino.auth.UserRegistry;
 import com.ddumanskiy.arduino.common.Command;
-import com.ddumanskiy.arduino.common.message.Message;
+import com.ddumanskiy.arduino.common.enums.Response;
+import com.ddumanskiy.arduino.common.message.MobileClientMessage;
+import com.ddumanskiy.arduino.common.message.ResponseMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.Channel;
@@ -13,8 +15,6 @@ import org.jboss.netty.channel.MessageEvent;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static com.ddumanskiy.arduino.server.response.ResponseCode.*;
 
 /**
  * Used before login in order to validate pass and brute force basic def.
@@ -41,19 +41,19 @@ public class PasswordHandler extends BaseSimpleChannelHandler {
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
         Channel incomeChannel = e.getChannel();
-        Message message = (Message) e.getMessage();
 
-        if (!isHandlerCommand(message.getCommand())) {
+        if (!isHandlerCommand(e.getMessage())) {
             ctx.sendUpstream(e);
             return;
         }
+
+        MobileClientMessage message = (MobileClientMessage) e.getMessage();
 
         String[] messageParts = message.getBody().split(" ", 2);
 
         if (messageParts.length != 2) {
             log.error("Wrong income message format.");
-            message.setBody(INVALID_COMMAND_FORMAT);
-            incomeChannel.write(message);
+            incomeChannel.write(new ResponseMessage(message, Response.INVALID_COMMAND_FORMAT));
             return;
         }
 
@@ -66,8 +66,7 @@ public class PasswordHandler extends BaseSimpleChannelHandler {
 
         if (brutterDefence.get(key) != null && brutterDefence.get(key) > 5) {
             log.error("Too many tries for login from 1 host. Blocking. User : {}; host : {}", userName, host);
-            message.setBody(NOT_ALLOWED);
-            incomeChannel.write(message);
+            incomeChannel.write(new ResponseMessage(message, Response.NOT_ALLOWED));
             return;
         }
 
@@ -75,16 +74,14 @@ public class PasswordHandler extends BaseSimpleChannelHandler {
 
         if (user == null) {
             log.error("User not registered.", userName);
-            message.setBody(USER_NOT_REGISTERED);
-            incomeChannel.write(message);
+            incomeChannel.write(new ResponseMessage(message, Response.USER_NOT_REGISTERED));
             return;
         }
 
         //todo fix pass validation
         if (!user.getPass().equals(pass)) {
             log.error("Bad password. User : {}; Pass : {}", userName, pass);
-            message.setBody(USER_NOT_AUTHENTICATED);
-            incomeChannel.write(message);
+            incomeChannel.write(new ResponseMessage(message, Response.USER_NOT_AUTHENTICATED));
 
             Integer tries = brutterDefence.get(key);
             brutterDefence.put(key, tries == null ? 1 : ++tries);

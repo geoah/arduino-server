@@ -1,10 +1,11 @@
 package com.ddumanskiy.arduino.client;
 
 import com.ddumanskiy.arduino.common.Command;
-import com.ddumanskiy.arduino.common.Utils;
 import com.ddumanskiy.arduino.common.decoders.MessageIdAndCommand3BytesDecoder;
 import com.ddumanskiy.arduino.common.encoders.MessageIdAndCommand3BytesEncoder;
-import com.ddumanskiy.arduino.common.message.Message;
+import com.ddumanskiy.arduino.common.message.ArduinoMessage;
+import com.ddumanskiy.arduino.common.message.MobileClientMessage;
+import com.ddumanskiy.arduino.common.utils.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.bootstrap.ClientBootstrap;
@@ -97,7 +98,7 @@ public class Client {
 
         String line;
         while ((line = consoleInput.readLine()) != null) {
-            String[] input = line.split(" ", 2);
+            String[] input = line.split(" ");
 
             byte command;
 
@@ -108,7 +109,15 @@ public class Client {
                 continue;
             }
 
-            serverChannel.write(new Message((short)random.nextInt(Short.MAX_VALUE), command, input.length == 1 ? "" : input[1]));
+            if (Utils.isArduinoCommand(command)) {
+                Byte pin = input.length > 1 ? Byte.valueOf(input[1]) : null;
+                Short value = input.length > 2 ? Short.valueOf(input[2]) : null;
+                serverChannel.write(new ArduinoMessage((short)random.nextInt(Short.MAX_VALUE), command, pin, value));
+            } else {
+                input = line.split(" ", 2);
+                String body = input.length == 1 ? "" : input[1];
+                serverChannel.write(new MobileClientMessage((short)random.nextInt(Short.MAX_VALUE), command, body));
+            }
         }
     }
 

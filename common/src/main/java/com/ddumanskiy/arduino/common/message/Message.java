@@ -5,21 +5,15 @@ package com.ddumanskiy.arduino.common.message;
  * Date: 07.12.13
  * Time: 13:39
  */
-public class Message {
+public abstract class Message {
 
     private short messageId;
 
     private byte command;
 
-    private String body;
-
-    public Message() {
-    }
-
-    public Message(short messageId, byte command, String body) {
+    protected Message(short messageId, byte command) {
         this.messageId = messageId;
         this.command = command;
-        this.body = body;
     }
 
     public short getMessageId() {
@@ -38,20 +32,9 @@ public class Message {
         this.command = command;
     }
 
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
     @Override
     public String toString() {
-        return "Message{" +
-                "messageId=" + messageId +
-                ", command=" + command +
-                ", body='" + body + '\'' +
-                '}';
+        return "messageId=" + messageId +
+                ", command=" + command;
     }
 }

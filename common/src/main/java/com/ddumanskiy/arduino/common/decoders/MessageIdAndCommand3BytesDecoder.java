@@ -1,7 +1,10 @@
 package com.ddumanskiy.arduino.common.decoders;
 
-import com.ddumanskiy.arduino.common.Utils;
+import com.ddumanskiy.arduino.common.message.ArduinoMessage;
 import com.ddumanskiy.arduino.common.message.Message;
+import com.ddumanskiy.arduino.common.message.MobileClientMessage;
+import com.ddumanskiy.arduino.common.message.ResponseMessage;
+import com.ddumanskiy.arduino.common.utils.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -26,10 +29,26 @@ public class MessageIdAndCommand3BytesDecoder extends FrameDecoder {
 
     @Override
     protected Message decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer) throws Exception {
-        Message message = new Message();
-        message.setMessageId(buffer.readShort());
-        message.setCommand(buffer.readByte());
-        message.setBody(buffer.toString(Utils.DEFAULT_CHARSET));
+        short messageId = buffer.readShort();
+        byte command = buffer.readByte();
+
+        Message message;
+
+        if (Utils.isResponseCommand(command)) {
+            message = new ResponseMessage(messageId, buffer.readByte());
+        } else if (Utils.isArduinoCommand(command)) {
+            Byte pin = null;
+            Short value = null;
+            if (buffer.readableBytes() > 0) {
+                pin = buffer.readByte();
+                if (buffer.readableBytes() > 0) {
+                    value = buffer.readShort();
+                }
+            }
+            message = new ArduinoMessage(messageId, command, pin, value);
+        } else {
+            message = new MobileClientMessage(messageId, command, buffer.toString(Utils.DEFAULT_CHARSET));
+        }
 
         //this is just for netty. moving read index to the end
         buffer.readerIndex(buffer.capacity());

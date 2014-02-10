@@ -1,7 +1,15 @@
 # Arduino-server
+
+# Requirements
 Java 7 required.
 
-# Clients protocol
+# Intro
+Currently server operates with 2 types of message - "Mobile Client" and "Arduino" messages.
+"Mobile Client" messages are those that used only to communicate between server and mobile client.
+"Arduino" messages are those that designed to be send to Arduino from Mobile Clients through server.
+
+
+# Mobile Client messages
 
 Every message consists of 4 parts: 
 Message length (2 bytes int), message id (2 bytes int), command number (1 byte int) and message itself. For instance, the value of the length field in this example is 15 (0x000F) which represents the length of "HELLO, WORLD" (12 bytes), messageID field length (2 bytes) and command field length (1 byte).
@@ -11,7 +19,7 @@ Message length (2 bytes int), message id (2 bytes int), command number (1 byte i
 	| 2bytes |  2 bytes  |  1 byte |    12 bytes    |
 	+--------+-----------+---------+----------------+       
 	| Length | MessageID | Command | Actual Content |
-	| 0x000F |   0x0001  |   0x01  | "HELLO, WORLD" |         
+	| 0x000F |   0x0001  |   0x01  | "HELLO, WORLD" |
 	+--------+-----------+---------+----------------+
 	         |                15 bytes              |
 	         +--------------------------------------+
@@ -45,30 +53,61 @@ This is 1 byte field responsible for storing code of requested from [client comm
         3 - save profile; Must have 1 param as content string : "{...}"
         4 - load profile; Don't have any params
         5 - get token; Must have 1 int param, dash board id : "1"
-        
+        7 - graph get (not finished)
+        8 - graph load (not finished)
+
+# Arduino messages
+
+Every message consists of 5 parts:
+Message length (2 bytes int), message id (2 bytes int), command number (1 byte int), pin number (1 byte int), pin value (2 bytes short). For instance :
+
+	             BEFORE DECODE (8 bytes)
+	+--------+-----------+---------+----------------+------------+
+	| 2bytes |  2 bytes  |  1 byte |    1 byte      |  2 bytes   |
+	+--------+-----------+---------+----------------+------------+
+	| Length | MessageID | Command |   Pin number   |  Pin value |
+	| 0x0006 |   0x0001  |   0x0A  |      0x01      |   0x0001   |
+	+--------+-----------+---------+----------------+------------+
+	         |                      6 bytes                      |
+	         +--------------------------------------+------------+
+
+So message is always "2 bytes + 2 bytes + 1 byte + 1 byte + 2 bytes" or "2 bytes + 2 bytes + 1 byte + 1 byte" in case value is not present (for "read" commands for instance);
+
 #### Arduino client command codes
 
-        10 - digital write; Must have 2 space-separated params as content string : "13 0" (Arduino digitalWrite(13, LOW))
-        11 - digital read; Must have 1 param as content string : "13"
+        10 - digital write; Must have 2 params: 13 0 (Arduino digitalWrite(13, LOW))
+        11 - digital read; Must have 1 param: 13
 
-        20 - analog write; Must have 2 space-separated params as content string : "9 0" (Arduino analogWrite(9, 0))
-        21 - analog read; Must have 1 param as content string : "9"
+        20 - analog write; Must have 2 params : 9 0 (Arduino analogWrite(9, 0))
+        21 - analog read; Must have 1 param : 9
 
-        30 - virtual pin write; Must have 2 space-separated params as content string : "9 0"
-        31 - virtual pin read; Must have 1 param as content string : "9"
+        30 - virtual pin write; Must have 2 params : 9 0
+        31 - virtual pin read; Must have 1 param : 9
 
         40 - reset a reading pin on arduino (used when load widget removed, for instance graph was reading pin and now not needed).
         Use case for graph1 :
-        	length = 4, messageID = 1, command = 21, body = 1
+        	length = 4, messageID = 1, command = 21, pin = 1
         	length = 3, messageID = 1, command = 40
         41 - reset all state info on arduino (not hardware reset)
 
-## Response Codes
-Every command will return json object. It will be either requested info (like loadProfile) either [response code](https://github.com/doom369/arduino-server/blob/master/server/src/main/java/com/ddumanskiy/arduino/response/ResponseCode.java) message in case of error or in case of command that doesn't return anything (like saveProfile):
-Response object -
-	{"code":200}
+        50 - serial write; (not finished)
+        51 - serial read; (not finished)
 
-    200 - message was successfully processed/passed to arduino board
+## Response Codes
+Every response for any command will return message with command field 0x00. In case of loadProfile command it will be either requested info (user profile) either [response code](https://github.com/doom369/arduino-server/blob/master/server/src/main/java/com/ddumanskiy/arduino/common/enums/Response.java) message in case of error or in case of command that doesn't return anything (like saveProfile):
+Response message structure:
+
+	             BEFORE DECODE (8 bytes)
+	+--------+-----------+---------+----------------+
+	| 2bytes |  2 bytes  |  1 byte |    1 byte      |
+	+--------+-----------+---------+----------------+
+	| Length | MessageID | Command | Response code  |
+	| 0x0006 |   0x0001  |   0x0A  |      0xC8      |
+	+--------+-----------+---------+----------------+
+	         |                4 bytes               |
+	         +--------------------------------------+
+
+    200 - message was successfully processed/passed to server
     
     2 - command is bad formed, check syntax and passed params
     3 - user not registered

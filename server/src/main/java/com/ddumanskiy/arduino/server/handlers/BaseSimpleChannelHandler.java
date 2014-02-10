@@ -1,5 +1,6 @@
 package com.ddumanskiy.arduino.server.handlers;
 
+import com.ddumanskiy.arduino.common.message.Message;
 import org.jboss.netty.channel.SimpleChannelHandler;
 
 /**
@@ -10,6 +11,10 @@ import org.jboss.netty.channel.SimpleChannelHandler;
 public abstract class BaseSimpleChannelHandler extends SimpleChannelHandler {
 
     protected abstract byte[] getHandlerCommands();
+
+    protected boolean isHandlerCommand(Object msg) {
+        return isHandlerCommand(((Message) msg).getCommand());
+    }
 
     protected boolean isHandlerCommand(byte inputCommand) {
         for (byte allowedCommand : getHandlerCommands()) {

@@ -4,7 +4,7 @@ package com.ddumanskiy.arduino.server.handlers;
 import com.ddumanskiy.arduino.auth.Session;
 import com.ddumanskiy.arduino.auth.User;
 import com.ddumanskiy.arduino.common.Command;
-import com.ddumanskiy.arduino.common.message.Message;
+import com.ddumanskiy.arduino.common.message.MobileClientMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.netty.channel.Channel;
@@ -32,12 +32,13 @@ public class LoadProfileHandler extends BaseSimpleChannelHandler {
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
         Channel incomeChannel = e.getChannel();
-        Message message = (Message) e.getMessage();
 
-        if (!isHandlerCommand(message.getCommand())) {
+        if (!isHandlerCommand(e.getMessage())) {
             ctx.sendUpstream(e);
             return;
         }
+
+        MobileClientMessage message = (MobileClientMessage) e.getMessage();
 
         User authUser = Session.getChannelToken().get(incomeChannel.getId());
 
