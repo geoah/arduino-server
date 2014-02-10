@@ -21,7 +21,7 @@
                     <finalName>server</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>com.ddumanskiy.arduino.server.Server</mainClass>
+                            <mainClass>com.blynk.arduino.server.Server</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

@@ -21,7 +21,7 @@
                     <finalName>client</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>com.ddumanskiy.arduino.client.Client</mainClass>
+                            <mainClass>com.blynk.arduino.client.Client</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
