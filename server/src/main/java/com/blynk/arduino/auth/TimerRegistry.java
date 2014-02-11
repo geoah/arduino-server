@@ -109,9 +109,9 @@ public class TimerRegistry {
         //unix now
         long now = System.currentTimeMillis() / 1000L;
 
-        if (timer.getStopTime() != null && timer.getStopTime() > now) {
-            return true;
-        }
+        //if (timer.getStopTime() != null && timer.getStopTime() > now) {
+        //    return true;
+        //}
 
         return false;
     }

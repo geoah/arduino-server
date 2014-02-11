@@ -40,8 +40,8 @@ public class Widget {
     //for TIMER widget
     //unix time
     private Long startTime;
-    private Long stopTime;
-    private Integer interval;
+    //time to turn off timer
+    private Integer stopInterval;
 
     //for SLIDER
     private Boolean pwm;
@@ -137,14 +137,6 @@ public class Widget {
         this.startTime = startTime;
     }
 
-    public Long getStopTime() {
-        return stopTime;
-    }
-
-    public void setStopTime(Long stopTime) {
-        this.stopTime = stopTime;
-    }
-
     public Long getReadingFrequency() {
         return readingFrequency;
     }
@@ -193,12 +185,12 @@ public class Widget {
         this.max = max;
     }
 
-    public Integer getInterval() {
-        return interval;
+    public Integer getStopInterval() {
+        return stopInterval;
     }
 
-    public void setInterval(Integer interval) {
-        this.interval = interval;
+    public void setStopInterval(Integer stopInterval) {
+        this.stopInterval = stopInterval;
     }
 
     @Override
@@ -217,7 +209,6 @@ public class Widget {
         if (pinType != widget.pinType) return false;
         if (startTime != null ? !startTime.equals(widget.startTime) : widget.startTime != null) return false;
         if (state != widget.state) return false;
-        if (stopTime != null ? !stopTime.equals(widget.stopTime) : widget.stopTime != null) return false;
         if (type != widget.type) return false;
         if (value != null ? !value.equals(widget.value) : widget.value != null) return false;
 
@@ -237,7 +228,6 @@ public class Widget {
         result = 31 * result + (value != null ? value.hashCode() : 0);
         result = 31 * result + (state != null ? state.hashCode() : 0);
         result = 31 * result + (startTime != null ? startTime.hashCode() : 0);
-        result = 31 * result + (stopTime != null ? stopTime.hashCode() : 0);
         return result;
     }
 }

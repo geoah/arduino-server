@@ -71,6 +71,7 @@ public class TimerChecker implements Runnable {
             Iterator<Widget> iterator = userTimers.getValue().iterator();
             while (iterator.hasNext()) {
                 Widget widget = iterator.next();
+                /*
                 if (widget.getStopTime() <= now) {
                     iterator.remove();
                     //todo fix value
@@ -78,6 +79,7 @@ public class TimerChecker implements Runnable {
                     DownstreamMessageEvent message = createMessage(userTimers.getKey(), widget, "0");
                     channelPipeline.sendDownstream(message);
                 }
+                */
             }
         }
 

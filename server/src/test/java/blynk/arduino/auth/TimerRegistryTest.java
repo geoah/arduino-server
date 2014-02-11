@@ -31,7 +31,7 @@ public class TimerRegistryTest {
         widget.setPinType(PinType.DIGITAL);
         widget.setType(WidgetType.TIMER);
         widget.setStartTime(time);
-        widget.setStopTime(time);
+        //widget.setStopTime(time);
 
         DashBoard dashBoard = new DashBoard();
         dashBoard.setWidgets(new Widget[] {widget});
@@ -57,7 +57,7 @@ public class TimerRegistryTest {
     public void testDateInPastScenario() {
         long pastTime = System.currentTimeMillis() / 1000;
         user.getUserProfile().getActiveDashboard().getWidgets()[0].setStartTime(pastTime);
-        user.getUserProfile().getActiveDashboard().getWidgets()[0].setStopTime(pastTime);
+        //user.getUserProfile().getActiveDashboard().getWidgets()[0].setStopTime(pastTime);
         TimerRegistry.checkUserHasTimers(user);
 
         assertEquals(0, TimerRegistry.getStartTimers().size());
@@ -70,7 +70,7 @@ public class TimerRegistryTest {
         user.getUserProfile().getActiveDashboard().getWidgets()[0].setStartTime(pastTime);
 
         pastTime += 60;
-        user.getUserProfile().getActiveDashboard().getWidgets()[0].setStopTime(pastTime);
+        //user.getUserProfile().getActiveDashboard().getWidgets()[0].setStopTime(pastTime);
         TimerRegistry.checkUserHasTimers(user);
 
         assertEquals(0, TimerRegistry.getStartTimers().size());
