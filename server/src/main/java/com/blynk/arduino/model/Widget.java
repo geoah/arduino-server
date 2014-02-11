@@ -41,6 +41,13 @@ public class Widget {
     //unix time
     private Long startTime;
     private Long stopTime;
+    private Integer interval;
+
+    //for SLIDER
+    private Boolean pwm;
+    private Integer min;
+    private Integer max;
+
 
     public long getId() {
         return id;
@@ -160,6 +167,38 @@ public class Widget {
 
     public void setHeight(Integer height) {
         this.height = height;
+    }
+
+    public Boolean getPwm() {
+        return pwm;
+    }
+
+    public void setPwm(Boolean pwm) {
+        this.pwm = pwm;
+    }
+
+    public Integer getMin() {
+        return min;
+    }
+
+    public void setMin(Integer min) {
+        this.min = min;
+    }
+
+    public Integer getMax() {
+        return max;
+    }
+
+    public void setMax(Integer max) {
+        this.max = max;
+    }
+
+    public Integer getInterval() {
+        return interval;
+    }
+
+    public void setInterval(Integer interval) {
+        this.interval = interval;
     }
 
     @Override
