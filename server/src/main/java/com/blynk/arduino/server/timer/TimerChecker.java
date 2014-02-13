@@ -1,8 +1,10 @@
 package com.blynk.arduino.server.timer;
 
-import com.blynk.arduino.auth.TimerRegistry;
 import com.blynk.arduino.auth.User;
-import com.blynk.arduino.common.message.MobileClientMessage;
+import com.blynk.arduino.auth.UserRegistry;
+import com.blynk.arduino.common.message.ArduinoMessage;
+import com.blynk.arduino.model.DashBoard;
+import com.blynk.arduino.model.UserProfile;
 import com.blynk.arduino.model.Widget;
 import com.blynk.arduino.model.enums.PinType;
 import com.blynk.arduino.server.GroupHolder;
@@ -14,10 +16,11 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.DownstreamMessageEvent;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.Collection;
+import java.util.Collections;
 
 import static com.blynk.arduino.common.enums.Command.*;
 
@@ -31,71 +34,68 @@ import static com.blynk.arduino.common.enums.Command.*;
  */
 public class TimerChecker implements Runnable {
 
-    private long sleepIntervalMillis;
     private ChannelPipeline channelPipeline;
 
     private static final Logger log = LogManager.getLogger(TimerChecker.class);
 
-    public TimerChecker() {
-        this.sleepIntervalMillis = 1000;
-    }
-
-    public TimerChecker(long sleepIntervalMillis, ChannelPipeline channelPipeline) {
-        this.sleepIntervalMillis = sleepIntervalMillis;
+    public TimerChecker(ChannelPipeline channelPipeline) {
         this.channelPipeline = channelPipeline;
     }
 
     @Override
     public void run() {
-        //todo. here possible problem. while we working with this list,
-        //new value may come and override Set<Widgets> and thus this is may be a memory leak
-        //because old timers may not be removed,
-        //additionally we may get 2 times same value. Chance is small, but exists, so this will be refactored
-        // for now ignoring.
-        long now = System.currentTimeMillis() / 1000L;
+        DateTime now = new DateTime().withMillisOfSecond(0);
 
-        for (Map.Entry<User, Set<Widget>> userTimers : TimerRegistry.getStartTimers().entrySet()) {
-            Iterator<Widget> iterator = userTimers.getValue().iterator();
-            while (iterator.hasNext()) {
-                Widget widget = iterator.next();
-                if (widget.getStartTime() <= now) {
-                    iterator.remove();
-                    //todo fix value
-                    log.info("Sending timer message. User : {},  widget : {}", userTimers.getKey(), widget);
-                    channelPipeline.sendDownstream(createMessage(userTimers.getKey(), widget, "1"));
+        for (User user : UserRegistry.getUsers().values()) {
+            Collection<Widget> userTimers = findUserTimers(user);
+
+            for (Widget timer : userTimers) {
+                DateTime startTime = new DateTime(timer.getStartTime());
+
+                //start action
+                if (equalHourMinuteAndSecond(startTime, now)) {
+                    log.info("Preparing for start timer message. User : {},  widgetStart : {}", user, timer);
+                    DownstreamMessageEvent event = createMessage(user, timer, (short) 1);
+                    channelPipeline.sendDownstream(event);
+                }
+
+                startTime = startTime.plusMillis(timer.getStopInterval());
+                //stop action
+                if (equalHourMinuteAndSecond(startTime, now)) {
+                    log.info("Preparing for stop timer message. User : {},  widget : {}", user, timer);
+                    DownstreamMessageEvent event = createMessage(user, timer, (short) 0);
+                    channelPipeline.sendDownstream(event);
                 }
             }
-        }
-
-        for (Map.Entry<User, Set<Widget>> userTimers : TimerRegistry.getStopTimers().entrySet()) {
-            Iterator<Widget> iterator = userTimers.getValue().iterator();
-            while (iterator.hasNext()) {
-                Widget widget = iterator.next();
-                /*
-                if (widget.getStopTime() <= now) {
-                    iterator.remove();
-                    //todo fix value
-                    log.info("Sending timer message. User : {},  widget : {}", userTimers.getKey(), widget);
-                    DownstreamMessageEvent message = createMessage(userTimers.getKey(), widget, "0");
-                    channelPipeline.sendDownstream(message);
-                }
-                */
-            }
-        }
-
-        try {
-            Thread.sleep(sleepIntervalMillis);
-        } catch (InterruptedException e) {
-            log.error(e);
         }
     }
 
-    private static DownstreamMessageEvent createMessage(User user, Widget timer, String value) {
+    private static boolean equalHourMinuteAndSecond(DateTime start, DateTime now) {
+        return start.get(DateTimeFieldType.hourOfDay()) == now.get(DateTimeFieldType.hourOfDay()) &&
+               start.get(DateTimeFieldType.minuteOfDay()) == now.get(DateTimeFieldType.minuteOfDay()) &&
+               start.get(DateTimeFieldType.secondOfDay()) == now.get(DateTimeFieldType.secondOfDay());
+    }
+
+    private static Collection<Widget> findUserTimers(User user) {
+        UserProfile profile = user.getUserProfile();
+        if (profile == null) {
+            return Collections.emptySet();
+        }
+
+        DashBoard activeDashboard = profile.getActiveDashboard();
+
+        if (activeDashboard == null) {
+            return Collections.emptySet();
+        }
+
+        return activeDashboard.getTimerWidgets();
+    }
+
+    private static DownstreamMessageEvent createMessage(User user, Widget timer, short value) {
         DefaultChannelGroup group = GroupHolder.getPrivateRooms().get(user);
 
         if (group == null) {
-            //todo define what to do here
-            log.error("Timer failed. No user and arduino board. {}, {}", user, timer);
+            log.error("Timer failed. No user and arduino board.");
             return null;
         }
 
@@ -105,17 +105,18 @@ public class TimerChecker implements Runnable {
                 byte command;
                 if (timer.getPinType() == PinType.ANALOG) {
                     command = ANALOG_WRITE.getCode();
-                } else if (timer.getPinType() == PinType.DIGITAL) {
-                    command = DIGITAL_WRITE.getCode();
-                } else {
+                } else if (timer.getPinType() == PinType.VIRTUAL) {
                     command = VIRTUAL_WRITE.getCode();
+                } else {
+                    command = DIGITAL_WRITE.getCode();
                 }
 
-                MobileClientMessage message = new MobileClientMessage((short)0, command, String.valueOf(timer.getPin()) + value);
+                ArduinoMessage message = new ArduinoMessage((short)0, command, timer.getPin(), value);
                 return new DownstreamMessageEvent(outChannel, Channels.future(outChannel), message, null);
             }
         }
 
+        log.error("No arduino in network. Skipping.");
         return null;
     }
 

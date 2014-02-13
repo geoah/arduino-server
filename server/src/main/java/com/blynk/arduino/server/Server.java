@@ -10,6 +10,8 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * User: ddumanskiy
@@ -54,8 +56,12 @@ public class Server {
         bootstrap.bind(new InetSocketAddress(port));
 
         //starting timer processing thread
+
+        ScheduledExecutorService scheduledTimerThreadPool = Executors.newScheduledThreadPool(1);
+
+
         try {
-            new Thread(new TimerChecker(1000, channelsPipe.getPipeline())).start();
+            scheduledTimerThreadPool.scheduleAtFixedRate(new TimerChecker(channelsPipe.getPipeline()), 0, 1, TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error(e);
         }

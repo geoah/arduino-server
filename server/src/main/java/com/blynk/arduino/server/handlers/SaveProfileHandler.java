@@ -2,7 +2,6 @@ package com.blynk.arduino.server.handlers;
 
 
 import com.blynk.arduino.auth.Session;
-import com.blynk.arduino.auth.TimerRegistry;
 import com.blynk.arduino.auth.User;
 import com.blynk.arduino.common.enums.Command;
 import com.blynk.arduino.common.enums.Response;
@@ -74,7 +73,6 @@ public class SaveProfileHandler extends BaseSimpleChannelHandler {
         boolean profileSaved = FileManager.overrideUserFile(authUser);
 
         if (profileSaved) {
-            TimerRegistry.checkUserHasTimers(authUser);
             incomeChannel.write(new ResponseMessage(message, Response.OK));
         } else {
             incomeChannel.write(new ResponseMessage(message, Response.SERVER_ERROR));

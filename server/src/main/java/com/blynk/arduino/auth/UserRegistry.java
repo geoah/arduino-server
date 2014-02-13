@@ -28,9 +28,6 @@ public final class UserRegistry {
     //init user DB if possible
     static {
         users = FileManager.deserialize();
-        for (User user : users.values()) {
-            TimerRegistry.checkUserHasTimers(user);
-        }
     }
 
     public static boolean isUserExists(String name) {
@@ -39,6 +36,10 @@ public final class UserRegistry {
 
     public static User getByName(String name) {
         return users.get(name);
+    }
+
+    public static ConcurrentHashMap<String, User> getUsers() {
+        return users;
     }
 
     //todo optimize

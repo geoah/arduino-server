@@ -2,10 +2,7 @@ package com.blynk.arduino.model;
 
 import com.blynk.arduino.model.enums.WidgetType;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * User: ddumanskiy
@@ -28,7 +25,7 @@ public class DashBoard {
 
     public Set<Widget> getTimerWidgets() {
         if (widgets == null || widgets.length == 0) {
-            return null;
+            return Collections.emptySet();
         }
 
         Set<Widget> timerWidgets = new HashSet<>();

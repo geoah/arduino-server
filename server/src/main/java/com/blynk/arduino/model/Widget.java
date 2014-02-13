@@ -29,7 +29,7 @@ public class Widget {
 
     private PinType pinType;
 
-    private Integer pin;
+    private Byte pin;
 
     private String value;
 
@@ -105,11 +105,11 @@ public class Widget {
         this.pinType = pinType;
     }
 
-    public Integer getPin() {
+    public Byte getPin() {
         return pin;
     }
 
-    public void setPin(Integer pin) {
+    public void setPin(Byte pin) {
         this.pin = pin;
     }
 
@@ -229,5 +229,29 @@ public class Widget {
         result = 31 * result + (state != null ? state.hashCode() : 0);
         result = 31 * result + (startTime != null ? startTime.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Widget{" +
+                "id=" + id +
+                ", x=" + x +
+                ", y=" + y +
+                ", width=" + width +
+                ", height=" + height +
+                ", dashBoardId=" + dashBoardId +
+                ", label='" + label + '\'' +
+                ", type=" + type +
+                ", pinType=" + pinType +
+                ", pin=" + pin +
+                ", value='" + value + '\'' +
+                ", state=" + state +
+                ", readingFrequency=" + readingFrequency +
+                ", startTime=" + startTime +
+                ", stopInterval=" + stopInterval +
+                ", pwm=" + pwm +
+                ", min=" + min +
+                ", max=" + max +
+                '}';
     }
 }

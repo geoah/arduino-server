@@ -1,9 +1,12 @@
 package com.blynk.arduino.server.timer;
 
-import com.blynk.arduino.auth.TimerRegistry;
 import com.blynk.arduino.auth.User;
+import com.blynk.arduino.auth.UserRegistry;
+import com.blynk.arduino.model.DashBoard;
+import com.blynk.arduino.model.UserProfile;
 import com.blynk.arduino.model.Widget;
 import com.blynk.arduino.model.enums.PinType;
+import com.blynk.arduino.model.enums.WidgetType;
 import com.blynk.arduino.server.GroupHolder;
 import com.blynk.arduino.server.handlers.enums.ChannelType;
 import org.jboss.netty.channel.Channel;
@@ -16,9 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import static org.mockito.Mockito.*;
 
@@ -34,7 +35,7 @@ public class TimerCheckerTest {
     private ChannelPipeline channelPipeline;
 
     @Mock
-    private Widget widget;
+    private Widget timerWidget;
 
     @Mock
     private User user;
@@ -49,19 +50,23 @@ public class TimerCheckerTest {
     private TimerChecker timerChecker;
 
 
-
     @Test
     public void testTimerChecker() {
-        Set<Widget> widgets = new HashSet<Widget>() {
-            {
-                add(widget);
-            }
-        };
+        User user = UserRegistry.createNewUser("test", "test");
+        UserProfile profile = new UserProfile();
+        user.setUserProfile(profile);
 
-        //when(user.hashCode()).thenReturn(1);
-        TimerRegistry.getStartTimers().put(user, widgets);
+        DashBoard dashBoard = new DashBoard();
+        dashBoard.setIsActive(true);
+        dashBoard.setWidgets(new Widget[] {timerWidget});
+        profile.setDashBoards(new DashBoard[] {dashBoard});
 
-        when(widget.getStartTime()).thenReturn(System.currentTimeMillis() / 1000 - 10);
+
+        when(timerWidget.getType()).thenReturn(WidgetType.TIMER);
+        when(timerWidget.getStartTime()).thenReturn(System.currentTimeMillis());
+        when(timerWidget.getPinType()).thenReturn(PinType.DIGITAL);
+        when(timerWidget.getStopInterval()).thenReturn(60000);
+
         GroupHolder.getPrivateRooms().put(user, group);
         when(group.iterator()).thenReturn(new Iterator<org.jboss.netty.channel.Channel>() {
             private boolean hasNext = true;
@@ -83,13 +88,12 @@ public class TimerCheckerTest {
             }
         });
 
-        when(widget.getPinType()).thenReturn(PinType.DIGITAL);
 
         when(channel.getAttachment()).thenReturn(ChannelType.ARDUINO);
 
         timerChecker.run();
 
-        verify(channelPipeline).sendDownstream(any(DownstreamMessageEvent.class));
+        verify(channelPipeline, times(1)).sendDownstream(any(DownstreamMessageEvent.class));
     }
 
 }
