@@ -103,7 +103,12 @@ public class Client {
             byte command;
 
             try {
-                command = Command.getByName(input[0]).getCode();
+                Command commandEnum = Command.getByName(input[0]);
+                if (commandEnum == null) {
+                    log.error("Unknown command.");
+                    continue;
+                }
+                command = commandEnum.getCode();
             } catch (IllegalArgumentException e) {
                 log.error(e);
                 continue;

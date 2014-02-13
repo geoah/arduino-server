@@ -46,7 +46,7 @@ public enum Command {
 
     public static Command getByName(String inCommand) {
         for (Command command : values()) {
-            if (command.name().equalsIgnoreCase(inCommand)) {
+            if (command.name().replace("_", "").equalsIgnoreCase(inCommand)) {
                 return command;
             }
         }
