@@ -48,7 +48,9 @@ public class TimerChecker implements Runnable {
 
         for (User user : UserRegistry.getUsers().values()) {
             Collection<Widget> userTimers = findUserTimers(user);
-
+            if (userTimers.size() > 0) {
+                log.info("Found {} timers for user {}", userTimers.size(), user.getName());
+            }
             for (Widget timer : userTimers) {
                 DateTime startTime = new DateTime(timer.getStartTime());
 
