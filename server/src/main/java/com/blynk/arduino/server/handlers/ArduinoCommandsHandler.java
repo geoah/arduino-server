@@ -80,12 +80,6 @@ public class ArduinoCommandsHandler extends BaseSimpleChannelHandler {
         }
     }
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-        log.error(e.getCause());
-
-    }
-
     private static boolean isCorrectChannel(Channel outChannel, Channel incomeChannel) {
         //if message from mobile client, than out channel should be arduino
         if (incomeChannel.getAttachment() == null || incomeChannel.getAttachment() == ChannelType.MOBILE_CLIENT) {

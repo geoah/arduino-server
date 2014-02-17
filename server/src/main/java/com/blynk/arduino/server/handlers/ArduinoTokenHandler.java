@@ -69,4 +69,5 @@ public class ArduinoTokenHandler extends BaseSimpleChannelHandler {
         incomeChannel.setAttachment(ChannelType.ARDUINO);
         ctx.sendUpstream(e);
     }
+
 }

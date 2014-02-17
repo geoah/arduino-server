@@ -2,6 +2,10 @@ package com.blynk.arduino.server.handlers;
 
 import com.blynk.arduino.common.enums.Command;
 import com.blynk.arduino.common.message.Message;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 
 /**
@@ -10,6 +14,8 @@ import org.jboss.netty.channel.SimpleChannelHandler;
  * Time: 12:05
  */
 public abstract class BaseSimpleChannelHandler extends SimpleChannelHandler {
+
+    private static final Logger log = LogManager.getLogger(BaseSimpleChannelHandler.class);
 
     protected abstract Command[] getHandlerCommands();
 
@@ -25,6 +31,11 @@ public abstract class BaseSimpleChannelHandler extends SimpleChannelHandler {
             }
         }
         return false;
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
+        log.error(e + ". Handler : " + ctx.getHandler());
     }
 
 }

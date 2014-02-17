@@ -18,6 +18,7 @@ import org.jboss.netty.channel.DownstreamMessageEvent;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
+import org.joda.time.DateTimeZone;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -44,29 +45,30 @@ public class TimerChecker implements Runnable {
 
     @Override
     public void run() {
-        DateTime now = new DateTime().withMillisOfSecond(0);
+        DateTime now = new DateTime(DateTimeZone.UTC).withMillisOfSecond(0);
 
         for (User user : UserRegistry.getUsers().values()) {
             Collection<Widget> userTimers = findUserTimers(user);
-            if (userTimers.size() > 0) {
-                log.info("Found {} timers for user {}", userTimers.size(), user.getName());
-            }
             for (Widget timer : userTimers) {
-                DateTime startTime = new DateTime(timer.getStartTime());
+                DateTime startTime = new DateTime(timer.getStartTime(), DateTimeZone.UTC);
 
                 //start action
                 if (equalHourMinuteAndSecond(startTime, now)) {
-                    log.info("Preparing for start timer message. User : {},  widgetStart : {}", user, timer);
                     DownstreamMessageEvent event = createMessage(user, timer, (short) 1);
-                    channelPipeline.sendDownstream(event);
+                    if (event != null) {
+                        log.info("Start timer message send. User : {},  widgetStart : {}", user, timer);
+                        channelPipeline.sendDownstream(event);
+                    }
                 }
 
                 startTime = startTime.plusMillis(timer.getStopInterval());
                 //stop action
                 if (equalHourMinuteAndSecond(startTime, now)) {
-                    log.info("Preparing for stop timer message. User : {},  widget : {}", user, timer);
                     DownstreamMessageEvent event = createMessage(user, timer, (short) 0);
-                    channelPipeline.sendDownstream(event);
+                    if (event != null) {
+                        log.info("Stop timer message send. User : {},  widgetStart : {}", user, timer);
+                        channelPipeline.sendDownstream(event);
+                    }
                 }
             }
         }
@@ -97,7 +99,7 @@ public class TimerChecker implements Runnable {
         DefaultChannelGroup group = GroupHolder.getPrivateRooms().get(user);
 
         if (group == null) {
-            log.error("Timer failed. No user and arduino board.");
+            log.error("Timer failed. No user and arduino board in network.");
             return null;
         }
 
